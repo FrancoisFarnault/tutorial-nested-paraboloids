@@ -1,0 +1,167 @@
+body {
+	font-family: sans-serif;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+main {
+	width: 950px;
+}
+
+p,
+ul,
+ol {
+	text-align: justify;
+	font-size: 1.2em;
+}
+
+ul,
+ol {
+	margin: 0;
+	padding-left: 30px;
+}
+
+h1,
+h2,
+h3 {
+	margin-top: 100px;
+	margin-bottom: 40px;
+}
+
+h1 {
+	font-size: 4.5em;
+}
+
+h2 {
+	font-size: 2.75em;
+}
+
+h3 {
+	font-size: 1.5em;
+}
+
+pre {
+	margin: 5px, 0, 0, 5px;
+	background-color: rgba(0, 0, 0, 0.8);
+}
+
+.img_frame {
+	width: 100%;
+	height: 450px;
+	position: relative;
+	background-color: whitesmoke;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+}
+
+.inputContainer {
+	position: absolute;
+	background-color: rgba(255, 255, 255, 0.9);
+	margin: 10px;
+	padding: 10px;
+}
+
+label {
+	min-width: 60px;
+	margin-left: 15px;
+}
+
+.inputDiv {
+	display: flex;
+	align-items: center;
+	margin: 10px;
+}
+
+.final {
+	background-image: url("img/final.png");
+}
+
+.parabola_down {
+	background-image: url("img/parabola_down.png");
+}
+
+.segmented_parabola {
+	background-image: url("img/segmented_parabola.png");
+}
+
+.distance_from_origin {
+	background-image: url("img/distance_from_origin.png");
+}
+
+.cylindrical_coordinates {
+	background-image: url("img/cylindrical_coordinates.png");
+}
+
+.paraboloid_sections {
+	background-image: url("img/paraboloid_sections.png");
+}
+
+.triangle_strip {
+	background-image: url("img/triangle_strip.png");
+	background-color: transparent;
+	background-size: 50%;
+}
+
+.paraboloid_surfaces {
+	background-image: url("img/paraboloid_surfaces.png");
+}
+
+.nested_paraboloids {
+	background-image: url("img/nested_paraboloids.png");
+}
+
+.circle_intersections {
+	background-image: url("img/widths_interval.png"), url("img/final_faded.png");
+}
+
+.vertices_offset {
+	background-image: url("img/vertices_interval_top.png"), url("img/vertices_interval_bottom.png"), url("img/final_faded.png");
+}
+
+.steps {
+	background-image: url("img/steps.png");
+	background-size: contain;
+	background-color: transparent;
+}
+
+.bounding_circle {
+	background-image: url("img/bounding_circle.png");
+}
+
+.vertical_lines {
+	background-image: url("img/vertical_lines.png");
+}
+
+.intersection_points {
+	background-image: url("img/intersection_points.png");
+}
+
+.vertices {
+	background-image: url("img/vertices.png");
+}
+
+.circumscribed_parabolas_1 {
+	background-image: url("img/circumscribed_parabolas_1.png");
+}
+
+.circumscribed_parabolas_2 {
+	background-image: url("img/circumscribed_parabolas_2.png");
+}
+
+.circumscribed_paraboloids {
+	background-image: url("img/circumscribed_paraboloids.png");
+}
+
+.animated_paraboloids {
+	background-image: url("img/animated_paraboloids.gif");
+}
+
+.final_faded {
+	background-image: url("img/final_faded.png");
+}
+
+.final_animated {
+	background-image: url("img/final_animated.gif");
+}

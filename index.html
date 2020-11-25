@@ -1,0 +1,1198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset='UTF-8' />
+  <title>How to make nested paraboloids</title>
+  <meta name="description" content="Nested hyperboloids - tutorial" />
+  <meta name="viewport" content="width=device-width, user-scalable=no">
+  <link rel='stylesheet' href='style.css' />
+
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.22.0/themes/prism-okaidia.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.22.0/prism.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.22.0/plugins/autoloader/prism-autoloader.min.js"></script>
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body);"></script>
+</head>
+
+<body>
+
+  <main>
+    <section>
+      <h1>How to make nested paraboloids</h1>
+      <p>On this tutorial you will see how to draw and animate nested paraboloids using the library <a
+          href="p5.js">p5.js</a> with <a href="https://en.wikipedia.org/wiki/WebGL">WebGL</a>.</p>
+      <div class="img_frame final_animated"></div>
+      <p>
+        The original inspiration for this drawing comes from the pinecone-like shape that
+        appear at the top of <a href="https://societycentered.design">the Society Centred Design
+          website</a>.</p>
+      <p>
+        This tutorial assumes you know javascript and that you are already in the process of learning p5.js. You can
+        find useful tutorials on how to get started with this
+        library <a href="https://www.youtube.com/watch?v=HerCR8bw_GE">here</a>.
+      </p>
+      <p>
+        To write the code you may need to install a code editor such as <a href="https://code.visualstudio.com">Visual
+          Studio Code</a>.
+      </p>
+    </section>
+
+    <section>
+      <h2>p5.js setup</h2>
+      <p>A p5.js program is called a sketch and usually includes a html page and a javascript page:</p>
+      <pre>
+        <code class="language-html">
+          &lt;!-- index.html -->
+          &lt;!DOCTYPE html>
+          &lt;html lang="en">
+
+          &lt;head>
+            &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.1.9/p5.min.js">&lt;/script>
+            &lt;meta charset="utf-8" />
+          &lt;/head>
+
+          &lt;body>
+            &lt;script src="sketch.js">&lt;/script>
+          &lt;/body>
+
+          &lt;/html>
+        </code>
+      </pre>
+      <pre>
+        <code class="language-javascript">
+          //sketch.js
+          function setup() {
+            createCanvas(windowWidth, windowHeight, WEBGL);
+          };
+          
+          function draw() {};
+        </code>
+      </pre>
+      <p>sketch.js is the page where we are going to write the logic of our program. The first line of <a
+          href="https://p5js.org/reference/#/p5/setup">\(setup()\)</a> creates a canvas at the dimensions of the
+        browser's window.</p>
+      <p>It also specifies that we are using a 3 dimensional coordinates system with WebGL. The point of coordinates
+        \(\left({0,0,0}\right)\) is
+        located at the center of the screen, the X axis is horizontal, the Y axis is vertical, and the Z axis goes from
+        front to back.</p>
+      <p>The function <a href="https://p5js.org/reference/#/p5/draw">\(draw()\)</a> comes directly after \(setup()\). If
+        you are already familiar with p5.js you know that \(draw()\) is a loop that draws the image over and over again.
+        This is where we are going to write the code for rendering. </p>
+      <p>If you open index.html on your browser you will see a blank canvas. Let's start
+        drawing on it!</p>
+    </section>
+
+    <section>
+      <h2>Graphing a parabola</h2>
+      <h3>Using an equation to draw a curve</h3>
+      <p>Before creating shapes in 3D we are going to start by drawing curves in 2D.</p>
+      <p>In this part we are going to use an equation to
+        calculate the \(\left({x,y}\right)\) coordinates of a parabola:</p>
+      <p>$$x^2+\left({y-f}\right)^2=\left({y+f}\right)^2$$</p>
+      <small><a href="https://en.wikipedia.org/wiki/Parabola#In_a_cartesian_coordinate_system">Wikipedia
+          source</a></small>
+      <p>In addition to \(x\) and \(y\) this equation uses a focal length \(f\). Try
+        <a href="https://codepen.io/francoisfarnault/pen/dyXGwwZ">this interactive sketch</a> to get a better sense
+        of what this parameter does to the shape of the parabola.</p>
+      </p>
+      <p>What we are aiming for is to use this equation inside a loop so that \(y\) is calculated for every
+        increment of \(x\).</p>
+      <p>Rearranging to write \(y\) as a function of \(x\) we have:</p>
+      <p>$$y=\frac{x^2}{4f}$$</p>
+      <small><a
+          href="https://www.wolframalpha.com/input/?i=solve+for+y%3A+x%5E2+%2B+%28y-f%29%5E2+%3D+%28y%2Bf%29%5E2">Equation
+          solver
+        </a></small>
+      <p>This way of writing the equation enables us to write this function:</p>
+      <pre>
+        <code class="language-js">      
+          let getParabolaCoordinates = (focalLength, parabolaWidth) => {
+            let coordinates = [];
+            for (let x = -parabolaWidth / 2; x &lt;= parabolaWidth / 2; x++) {
+              let y = pow(x, 2) / (4 * focalLength);
+              coordinates.push(createVector(x, y));
+            }
+            return coordinates;
+          };
+        </code>
+      </pre>
+      <p>\(x\) goes from \(-parabolaWidth / 2\) to \(parabolaWidth / 2\) in order to have the curve symmetrical to a
+        vertical axis. On one side of the parabola the values of \(x\) are
+        negative and on the other they are positive.</p>
+      <p>The function <a href="https://p5js.org/reference/#/p5/createVector">\(createVector()\)</a> binds \(x\) and
+        \(y\) together.</p>
+      <p>Now let's write the function that will draw a curve from this array. We can use the function <a
+          href="https://p5js.org/reference/#/p5/vertex">\(vertex()\)</a> to connect all the points with segments:
+      </p>
+      <pre>
+        <code class="language-js">      
+          let drawLineFromCoordinates = (coordinates) => {
+            beginShape();
+            for (let point of coordinates) {
+              vertex(point.x, point.y, point.z);
+            }
+            endShape();
+          };
+        </code>
+      </pre>
+      <p>In \(setup()\) let's set the focal length to 50 and the width to 400.</p>
+      <p>Our program starts by calculating the coordinates of the parabola, then it stores them in an array outside the
+        scope of \(setup()\) so that it can be reused in \(draw()\):</p>
+      <pre>
+        <code class="language-js">      
+          let parabolaCoordinates = [];
+
+          function setup() {
+            createCanvas(windowWidth, windowHeight, WEBGL);
+          
+            let focalLength = 50,
+              parabolaWidth = 400;
+
+            parabolaCoordinates = getParabolaCoordinates(focalLength, parabolaWidth);
+          };
+          
+          function draw() {
+            noFill();
+            strokeWeight(1.5);
+            drawLineFromCoordinates(parabolaCoordinates);
+          };
+
+          let getParabolaCoordinates = (focalLength, parabolaWidth) => { ... };
+          
+          let drawLineFromCoordinates = (coordinates) => { ... };
+        </code>
+      </pre>
+      <p>If you run this program you will see this parabola: </p>
+      <div class="img_frame parabola_down"></div>
+      <small><a href="#">Source code</a></small>
+      <p>This is a good start. However this curve is made of with a huge amount of points very close to one another.
+        Later on this will slow the process of rendering surfaces.</p>
+      <p>How could we draw this curve with a lower number of points while retaining a sufficient level of definition?
+      </p>
+      <h3>Adjusting the curve's level of definition</h3>
+      <p>
+        Let’s add a new parameter to our function so that we can control the number of points per parabola:
+      </p>
+      <pre>
+        <code class="language-js">      
+          let getParabolaCoordinates = (focalLength, parabolaWidth, pointsPerParabola) => {
+            let coordinates = [],
+              xIncrement = parabolaWidth / (pointsPerParabola - 1);
+            for (let i = 0, x = -parabolaWidth / 2; i &lt; pointsPerParabola; i++, x += xIncrement) {
+              let y = pow(x, 2) / (4 * focalLength);
+              coordinates.push(createVector(x, y));
+            }
+            return coordinates;
+          };
+        </code>
+      </pre>
+      <p>This changes a bit the logic of the function as \(x\) is now incremented by a pre-calculated interval.</p>
+      <p>In \(setup()\) let's set the number of points to 9.</p>
+      <p>In \(draw()\) let's use the function <a href="https://p5js.org/reference/#/p5/ellipse">\(ellipse()\)</a> to
+        highlight the segmentation:
+      </p>
+      <pre>
+        <code class="language-js">      
+          let parabolaCoordinates = [];
+
+          function setup() {
+            createCanvas(windowWidth, windowHeight, WEBGL);
+          
+            let focalLength = 50,
+              parabolaWidth = 400,
+              pointsPerParabola = 9;
+          
+            parabolaCoordinates = getParabolaCoordinates(focalLength, parabolaWidth, pointsPerParabola);
+          };
+          
+          function draw() {
+            noFill();
+            strokeWeight(1.5);
+            drawLineFromCoordinates(parabolaCoordinates);
+          
+            fill("black");
+            for (let parabolaPoint of parabolaCoordinates) {
+              ellipse(parabolaPoint.x, parabolaPoint.y, 10);
+            }
+          };
+
+          let getParabolaCoordinates = (focalLength, parabolaWidth, pointsPerParabola) => { ... };
+          
+          let drawLineFromCoordinates = (coordinates) => { ... };
+        </code>
+      </pre>
+      <div class="img_frame segmented_parabola"></div>
+      <small><a href="#">Source code</a></small>
+      <p>Now we can set the curve's level of definition. But there is one last thing to improve before moving on
+        to 3D:</p>
+      <p>With our current code all parabolas must pass through the center of the screen: the point of
+        coordinates \(\left({0,0}\right)\). This will become a problem when we will need to draw several curves in a way
+        that they don't touch each other.</p>
+      <p>How can we modify our code to graph a parabola at a given distance from the origin of the coordinate system?
+      </p>
+      <h3>Positioning the curve at a given distance from the origin</h3>
+      <p>Let's add a parameter to the equation of a parabola so that it takes into
+        account a distance from the origin:
+      </p>
+      <p>$$y=\frac{x^2}{4*focalLength}+distanceFromOrigin$$</p>
+      <p>Let's implement this minor change in our code:</p>
+      <pre>
+        <code class="language-js">      
+          let getParabolaCoordinates = (focalLength, parabolaWidth, pointsPerParabola, distanceFromOrigin) => {
+            let coordinates = [],
+              xIncrement = parabolaWidth / (pointsPerParabola - 1);
+            for (let i = 0, x = -parabolaWidth / 2; i &lt; pointsPerParabola; i++, x += xIncrement) {
+              let y = pow(x, 2) / (4 * focalLength) + distanceFromOrigin;
+              coordinates.push(createVector(x, y));
+            }
+            return coordinates;
+          };
+        </code>
+      </pre>
+      <p>In \(setup()\) let's set this distance to 50.</p>
+      <p>in \(draw()\) let's use \(ellipse()\) to visualize the space
+        between the curve and the origin:</p>
+      <pre>
+        <code class="language-js">      
+          let parabolaCoordinates = [],
+          origin;
+        
+          function setup() {
+            createCanvas(windowWidth, windowHeight, WEBGL);
+          
+            let focalLength = 50,
+              parabolaWidth = 400,
+              pointsPerParabola = 9,
+              distanceFromOrigin = 50;
+          
+            parabolaCoordinates = getParabolaCoordinates(focalLength, parabolaWidth, pointsPerParabola, distanceFromOrigin);
+            origin = createVector(0, 0, 0);
+          };
+          
+          function draw() {
+            noFill();
+            strokeWeight(1.5);
+            drawLineFromCoordinates(parabolaCoordinates);
+          
+            fill("black");
+            ellipse(origin.x, origin.y, 10);
+          };
+          
+          let getParabolaCoordinates = (focalLength, parabolaWidth, pointsPerParabola, distanceFromOrigin) => { ... };
+          
+          let drawLineFromCoordinates = (coordinates) => { ... };
+        </code>
+      </pre>
+      <div class="img_frame distance_from_origin"></div>
+      <small><a href="#">Source code</a></small>
+      <p>This is enough material to move from 2D to 3D. Let's make a paraboloid from this curve.</p>
+    </section>
+
+    <section>
+      <h2>Graphing a paraboloid</h2>
+      <p>In this part we will:</p>
+      <ol>
+        <li>write a function that rotates a point in 3D,</li>
+        <li>use this function to rotate each point of a parabola,</li>
+        <li>then use the coordinates of the rotated points to make surfaces.</li>
+      </ol>
+      <h3>Getting from 2D to 3D</h3>
+      <p>Let's save our code in a separated file and start over from a blank canvas. We are going to start
+        with a simple function that makes a circle by rotating a point in 3 dimensions.
+      </p>
+      <p>Here it makes sense to use cylindrical coordinates which are a 3D version of <a
+          href="https://www.youtube.com/watch?v=N633bLi_YCw">polar coordinates</a>.</p>
+      <p>The idea is to calculate the coordinates of a series of points forming a circle. These points are on a circle
+        of radius \(p\) and have an angle of rotation \(φ\) which is incremented from 0
+        to 360 degrees.</p>
+      <p>Here are the equations of cylindrical coordinates for a
+        revolution around the horizontal axis:</p>
+      <p>$$x=x$$</p>
+      <p>$$y=pcosφ$$</p>
+      <p>$$z=psinφ$$</p>
+      <small><a href="https://en.wikipedia.org/wiki/Cylindrical_coordinate_system#Cartesian_coordinates">Wikipedia
+          source</a></small>
+      <p>Let's translate this into code:</p>
+      <pre>
+        <code class="language-js">     
+          let getCylindricalCoordinates = (point, numberOfRotations) => {
+            let coordinates = [],
+              x = point.x,
+              radius = point.y,
+              angleIncrement = TWO_PI / numberOfRotations;
+            for (let i = angularPosition = 0; i &lt;= numberOfRotations; i++, angularPosition += angleIncrement) {
+              let y = radius * cos(angularPosition),
+                z = radius * sin(angularPosition);
+              coordinates.push(createVector(x, y, z));
+            }
+            return coordinates;
+          };
+        </code>
+      </pre>
+      <p>One way of looking at cylindrical coordinates is to visualize an initial point that is rotated several times
+        around an axis. From this point of view \(radius\) equals \(point.y\), and \(x\) equals \(point.x\).</p>
+      <p>This is where the transition from 2D to 3D occurs: the input of this function is a point with 2 dimensional
+        \(\left({x,y}\right)\) coordinates, and the output is a series of points with \(\left({x,y,z}\right)\)
+        coordinates.</p>
+      <p>It is useful to know that with p5.js angles are in radiant by default: 360 degrees = 2&pi; radians = a full
+        rotation. In p5.js the variable \(TWO\_PI\) equals 2&pi;.</p>
+      <p>Now in \(setup()\) let's set arbitrary values for the coordinates of the point and for the number of rotations.
+      </p>
+      <pre>
+          <code class="language-js">     
+            let circleCoordinates = [];
+
+            function setup() {
+              createCanvas(windowWidth, windowHeight, WEBGL);
+            
+              let point = createVector(200, 250),
+                numberOfRotations = 20;
+            
+              circleCoordinates = getCylindricalCoordinates(point, numberOfRotations);
+            };
+            
+            function draw() {
+              noFill();
+              strokeWeight(1.5);
+              drawLineFromCoordinates(circleCoordinates);
+            };
+            
+            let getCylindricalCoordinates = (point, numberOfRotations) => { ... };
+            
+            let drawLineFromCoordinates = (coordinates) => { ... };
+          </code>
+        </pre>
+      <div class="img_frame cylindrical_coordinates"></div>
+      <small><a href="#">Source code</a></small>
+      <p>Now we can rotate a point in 3D. How can we replicate this rotation for all the points of a parabola?</p>
+      <h3>Drawing the sections of a hyperboloid</h3>
+      <p>We are going to reuse the code we wrote to calculate the coordinates of the points that make
+        a parabola.</p>
+      <p>Then we will write a new function that rotates these points around the
+        horizontal axis.</p>
+      <p>This function will output a series of parallel circles that are actually the sections of a
+        paraboloid.</p>
+      <pre>
+        <code class="language-js">      
+          let getSectionsOfParaboloid = (parabolaCoordinates, numberOfRotations) => {
+            let sections = [];
+            for (let point of parabolaCoordinates) {
+              let section = getCylindricalCoordinates(point, numberOfRotations);
+              sections.push(section);
+            }
+            return sections;
+          };
+        </code>
+      </pre>
+      <p>Let's plug everything together:</p>
+      <pre>
+        <code class="language-js">      
+          let parabolaCoordinates = [],
+          sectionsOfParaboloid = [];
+        
+          function setup() {
+            createCanvas(windowWidth, windowHeight, WEBGL);
+          
+            let focalLength = 50,
+              parabolaWidth = 400,
+              pointsPerParabola = 9,
+              distanceFromOrigin = 50,
+              numberOfRotations = 20;
+          
+            parabolaCoordinates = getParabolaCoordinates(focalLength, parabolaWidth, pointsPerParabola, distanceFromOrigin);
+            sectionsOfParaboloid = getSectionsOfParaboloid(parabolaCoordinates, numberOfRotations);
+          };
+          
+          function draw() {
+            noFill();
+            strokeWeight(1.5);
+            drawLineFromCoordinates(parabolaCoordinates);
+          
+            for (let section of sectionsOfParaboloid) {
+              drawLineFromCoordinates(section);
+            }
+          };
+          
+          let getParabolaCoordinates = (focalLength, parabolaWidth, pointsPerParabola, distanceFromOrigin) => { ... };
+          
+          let getSectionsOfParaboloid = (parabolaCoordinates, numberOfRotations) => { ... };
+          
+          let getCylindricalCoordinates = (point, numberOfRotations) => { ... };
+          
+          let drawLineFromCoordinates = (coordinates) => { ... };
+        </code>
+      </pre>
+      <div class="img_frame paraboloid_sections"></div>
+      <small><a href="#">Source code</a></small>
+      <p>A paraboloid is taking shape. Yet it is still made of with lines while what we want is surfaces.</p>
+      <p>How can we use
+        these sections to generate surfaces?</p>
+      <h3>Drawing the surfaces of a paraboloid</h3>
+      <p>We are going to take the sections two by two and fill the space between
+        them with triangles.</p>
+      <p>In p5.js there is an easy way of doing this: <a
+          href="https://p5js.org/reference/#/p5/beginShape">\(beginShape(TRIANGLE\_STRIP)\)</a>. It works by
+        alternatively taking the coordinates of points along a first and a second line. Here is the
+        pattern:</p>
+      <div class="img_frame triangle_strip"></div>
+      <p>This means that our code will have to go alternatively through 2 arrays of coordinates in a similar
+        pattern:</p>
+      <pre>
+        <code class="language-js">   
+          let drawTriangleStripFromTwoCurves = (coordinates1, coordinates2) => {
+            beginShape(TRIANGLE_STRIP);
+            for (let i = 0; i &lt; coordinates1.length; i++) {
+              vertex(coordinates1[i].x, coordinates1[i].y, coordinates1[i].z);
+              vertex(coordinates2[i].x, coordinates2[i].y, coordinates2[i].z);
+            }
+            endShape();
+          };
+        </code>
+      </pre>
+      <p>In \(draw()\) let's take the sections of paraboloid two by two and use them as an input into the above
+        function:
+      </p>
+      <pre>
+        <code class="language-js">   
+          let sectionsOfParaboloid = [];
+
+          function setup() {
+            createCanvas(windowWidth, windowHeight, WEBGL);
+          
+            let focalLength = 50,
+              parabolaWidth = 400,
+              pointsPerParabola = 9,
+              distanceFromOrigin = 50,
+              numberOfRotations = 20;
+            let parabolaCoordinates = getParabolaCoordinates(focalLength, parabolaWidth, pointsPerParabola, distanceFromOrigin);
+          
+            sectionsOfParaboloid = getSectionsOfParaboloid(parabolaCoordinates, numberOfRotations);
+          };
+          
+          function draw() {
+            for (let i = 0; i &lt; sectionsOfParaboloid.length - 1; i++) {
+              drawTriangleStripFromTwoCurves(sectionsOfParaboloid[i], sectionsOfParaboloid[i + 1]);
+            }
+          };
+
+          let getParabolaCoordinates = (focalLength, parabolaWidth, pointsPerParabola, distanceFromOrigin) => { ... };
+          
+          let getSectionsOfParaboloid = (parabolaCoordinates, numberOfRotations) => { ... };
+          
+          let getCylindricalCoordinates = (point, numberOfRotations) => { ... };
+  
+          let drawTriangleStripFromTwoCurves = (coordinates1, coordinates2) => { ... };
+        </code>
+      </pre>
+      <div class="img_frame paraboloid_surfaces"></div>
+      <small><a href="#">Source code</a></small>
+      <p>This is better. Now that we know how to make a single paraboloid, let's make more!</p>
+    </section>
+
+    <section>
+      <h2>Graphing nested paraboloid</h2>
+      <p>A quick way to add more paraboloid is to repeat the function that calculates the coordinates of a
+        parabola while slightly changing the values of \(focalLength\), \(parabolaWidth\), and \(distanceFromOrigin\):
+      </p>
+      <pre>
+        <code class="language-js">   
+          let getNestedParaboloidsCoordinates = (number0fParaboloids, numberOfRotations, pointsPerParabola) => {
+            let coordinates = [];
+            let focalLength = 300,
+              parabolaWidth = 500,
+              distanceFromOrigin = 10;
+          
+            for (let i = 0; i &lt; number0fParaboloids; i++) {
+              let parabolaCoordinates = getParabolaCoordinates(focalLength, parabolaWidth, pointsPerParabola, distanceFromOrigin),
+                paraboloidCoordinates = getSectionsOfParaboloid(parabolaCoordinates, numberOfRotations);
+              coordinates.push(paraboloidCoordinates);
+          
+              focalLength -= 50;
+              parabolaWidth -= 60;
+              distanceFromOrigin += 20;
+            }
+            return coordinates;
+          };
+        </code>
+      </pre>
+      <p>The above function adds another level of encapsulation to the
+        array that contain the coordinates. The array of
+        nested paraboloids is now made of 3 nested layers:
+      </p>
+      <pre>
+        <code>   
+          Nested paraboloids[
+                      Paraboloid[
+                                Section of paraboloid[
+                                          Point0, Point1, ...
+                                ]
+                      ]
+          ]  
+        </code>
+      </pre>
+      <p>This structure means that we are going to use a nested loop in \(draw()\) to access the coordinates:</p>
+      <pre>
+        <code class="language-js">  
+          let nestedParaboloidsCoordinates = [];
+
+          function setup() {
+            createCanvas(windowWidth, windowHeight, WEBGL);
+          
+            let number0fParaboloids = 6,
+              pointsPerParabola = 9,
+              numberOfRotations = 20;
+          
+            nestedParaboloidsCoordinates = getNestedParaboloidsCoordinates(number0fParaboloids, numberOfRotations, pointsPerParabola);
+          };
+          
+          function draw() {
+            for (let paraboloid of nestedParaboloidsCoordinates) {
+              for (let i = 0; i &lt paraboloid.length - 1; i++) {
+                drawTriangleStripFromTwoCurves(paraboloid[i], paraboloid[i + 1]);
+              }
+            }
+          };
+
+          let getNestedParaboloidsCoordinates = (number0fParaboloids, numberOfRotations, pointsPerParabola) => { ... };
+
+          let getParabolaCoordinates = (focalLength, parabolaWidth, pointsPerParabola, distanceFromOrigin) => { ... };
+          
+          let getSectionsOfParaboloid = (parabolaCoordinates, numberOfRotations) => { ... };
+          
+          let getCylindricalCoordinates = (point, numberOfRotations) => { ... };
+          
+          let drawTriangleStripFromTwoCurves = (coordinates1, coordinates2) => { ... };
+        </code>
+      </pre>
+      <div class="img_frame nested_paraboloids"></div>
+      <small><a href="#">Source code</a></small>
+      <p>The pinecone-like structure is there and this shape bears some similarities with the expected result.</p>
+      <p>That being said the way we set \(focalLength\), \(parabolaWidth\), and the \(distanceFromOrigin\) is imprecise
+        and there isn't yet a well
+        identified design pattern for the proportions.
+      </p>
+      <p>The next part will cover a few additional steps to draw the paraboloids with greater harmony and
+        precision.</p>
+      <p>However if you feel like this shape is satisfying enough you can skip the next part and jump directly to
+        animation and rendering.</p>
+    </section>
+
+    <section>
+      <h2>Setting the right proportions</h2>
+      <p>Before going further let's step back and observe the shape that we are about to
+        draw:</p>
+      <div class="img_frame final"></div>
+      <p>There is a pattern here: each paraboloid intersects a bounding circle with a constant interspace on the
+        X axis.</p>
+      <div class="img_frame circle_intersections"></div>
+      <p>Also there is a constant interspace between each vertex on the Y axis this time. The vertices are the turning
+        points of the parabolas. Their coordinates are \(\left({0,distanceFromOrigin}\right)\).</p>
+      <div class="img_frame vertices_offset"></div>
+      <p>These observations give us clues about the steps to take to draw this shape:</p>
+      <ol>
+        <li>drawing the bounding circle,</li>
+        <li>drawing vertical lines to visualize the widths of each parabola.</li>
+        <li>drawing the intersections between these lines and the circle,</li>
+        <li>drawing the vertices,</li>
+        <li>joining the dots with parabolas.</li>
+      </ol>
+      <div class="img_frame steps"></div>
+      <p>Let's start over from a blank canvas and do this step by step:</p>
+      <h3>Drawing the bounding circle</h3>
+      <p>Step one is easy with the function \(ellipse()\):</p>
+      <pre>
+        <code class="language-js">      
+          let boundingRadius = 250;
+
+          function setup() {
+            createCanvas(windowWidth, windowHeight, WEBGL);
+          };
+          
+          function draw() {
+            noFill();
+            strokeWeight(1.5);
+            ellipse(0, 0, boundingRadius * 2);
+          };
+        </code>
+      </pre>
+      <div class="img_frame bounding_circle"></div>
+      <small><a href="#">Source code</a></small>
+      <h3>Visualizing the widths of the parabolas</h3>
+      <p>In this part we are going to use the function <a href="https://p5js.org/reference/#/p5/line">\(line()\)</a> to
+        visualize the different widths of the parabolas.</p>
+      <p>More specifically we are going to visualize the absolute value of \(x\) at the endpoints of each parabola. If
+        we draw two symmetrical vertical lines from these values then the space between them is the width of a parabola.
+      </p>
+      <p>Also the lines are arranged in a specific way: they are separated by a constant interspace and they are
+        positioned at a given distance from the Y axis.</p>
+      <p>In order to set their positions with precision let's add a padding from the center and a padding from the
+        sides of the circle:
+      </p>
+      <pre>
+        <code class="language-js">      
+          let boundingRadius = 250;
+          let valuesOfX = [];
+          
+          function setup() {
+            createCanvas(windowWidth, windowHeight, WEBGL);
+          
+            let numberOfParabolas = 6,
+              centerPadding = 50,
+              sidePadding = 10;
+          
+            valuesOfX = getValuesOfXAtParabolasEndpoints(numberOfParabolas, boundingRadius, centerPadding, sidePadding);
+          };
+          
+          function draw() {
+            noFill();
+            strokeWeight(1.5);
+            ellipse(0, 0, boundingRadius * 2);
+          
+            for (let x of valuesOfX) {
+              line(x, -300, x, 300);
+              line(-x, -300, -x, 300);
+            }
+          };
+          
+          let getValuesOfXAtParabolasEndpoints = (numberOfParabolas, boundingRadius, centerPadding, sidePadding) => {
+            let valuesOfX = [],
+              xInterspace = (boundingRadius - centerPadding - sidePadding) / (numberOfParabolas - 1);
+            for (let i = 0; i &lt; numberOfParabolas; i++) {
+              valuesOfX.push(centerPadding + xInterspace * i);
+            }
+            return valuesOfX;
+          };
+        </code>
+      </pre>
+      <div class="img_frame vertical_lines"></div>
+      <small><a href="#">Source code</a></small>
+      <p>The next step is to find the coordinates of the intersection points between each line and the bounding
+        circle.
+      </p>
+      <p>Actually we already have the values of \(x\) so our aim is now to
+        find the values of \(y\) for each intersection point. </p>
+      <h3>Getting the endpoints of the parabolas</h3>
+      <p>The values of \(x\) are already known and we also have the bounding radius \(r\). This is enough to calculate
+        the values of \(y\) for each intersection point with the equation of a circle:
+      </p>
+      <p>$$x^{2}+y^{2}=r^{2}$$</p>
+      <small><a href="https://en.wikipedia.org/wiki/Circle#Equations">Wikipedia source</a></small>
+      <p> Rearranging to write \(y\) as a function of \(x\) we have:</p>
+      <p>$$y = ±\sqrt{r^{2} - x^{2}}$$</p>
+      <small><a href="https://www.wolframalpha.com/input/?i=solve+for+y%3A+x%5E2%2By%5E2+%3D+r%5E2">Equation
+          solver</a></small>
+      <p>Let's add a new function to our program with the above equation:</p>
+      <pre>
+        <code class="language-js">      
+          let getParabolasEndPoints = (valuesOfX, boundingRadius) => {
+            let parabolasEndPoints = [];
+            for (let x of valuesOfX) {
+              let y = sqrt(pow(boundingRadius, 2) - pow(x, 2));
+              parabolasEndPoints.push(createVector(x, y));
+            }
+            return parabolasEndPoints;
+          };
+        </code>
+      </pre>
+      <p>Then in \(draw()\) let's use the function \(ellipse()\) at the intersections:</p>
+      <pre>
+        <code class="language-js">      
+          let boundingRadius = 250;
+          let endPoints = [];
+          
+          function setup() {
+            createCanvas(windowWidth, windowHeight, WEBGL);
+          
+            let numberOfParabolas = 6,
+              centerPadding = 50,
+              sidePadding = 10;
+            let valuesOfX = getValuesOfXAtParabolasEndpoints(numberOfParabolas, boundingRadius, centerPadding, sidePadding);
+          
+            endPoints = getParabolasEndPoints(valuesOfX, boundingRadius);
+          };
+          
+          function draw() {
+            noFill();
+            strokeWeight(1.5);
+            ellipse(0, 0, boundingRadius * 2);
+          
+            fill("black");
+            for (let endPoint of endPoints) {
+              line(endPoint.x, -300, endPoint.x, 300);
+              line(-endPoint.x, -300, -endPoint.x, 300);
+              ellipse(endPoint.x, endPoint.y, 10);
+              ellipse(-endPoint.x, endPoint.y, 10);
+            }
+          };
+          
+          let getValuesOfXAtParabolasEndpoints = (numberOfParabolas, boundingRadius, centerPadding, sidePadding) => { ... };
+          
+          let getParabolasEndPoints = (valuesOfX, boundingRadius) => { ... };
+        </code>
+      </pre>
+      <div class="img_frame intersection_points"></div>
+      <small><a href="#">Source code</a></small>
+      <p>We are going to use these endpoints to graph the parabolas. But first let's draw the
+        vertices.</p>
+      <h3>Setting the vertices</h3>
+      <p>Let's write a function that returns a series of vertices separated by a constant interspace:</p>
+      <pre>
+        <code class="language-js">      
+          let getParabolasVertices = (numberOfParabolas, vertexInterspace) => {
+            let vertices = [];
+            for (let i = 1; i &lt;= numberOfParabolas; i++) {
+              let y = vertexInterspace * i;
+              vertices.push(createVector(0, y));
+            }
+            return vertices;
+          };
+        </code>
+      </pre>
+      <p>Let's set this interspace to 15 and use \(ellipse()\) to show their positions:</p>
+      <pre>
+        <code class="language-js">      
+          let boundingRadius = 250,
+          numberOfParabolas = 6;
+          let endPoints = [],
+            vertices = [];
+          
+          function setup() {
+            createCanvas(windowWidth, windowHeight, WEBGL);
+          
+            let centerPadding = 50,
+              sidePadding = 10,
+              vertexInterspace = 15;
+            let valuesOfX = getValuesOfXAtParabolasEndpoints(numberOfParabolas, boundingRadius, centerPadding, sidePadding);
+          
+            endPoints = getParabolasEndPoints(valuesOfX, boundingRadius);
+            vertices = getParabolasVertices(numberOfParabolas, vertexInterspace);
+          };
+          
+          function draw() {
+            noFill();
+            strokeWeight(3);
+            ellipse(0, 0, boundingRadius * 2);
+          
+            fill("black");
+            for (let i = 0; i &lt; numberOfParabolas; i++) {
+              ellipse(endPoints[i].x, endPoints[i].y, 10);
+              ellipse(-endPoints[i].x, endPoints[i].y, 10);
+              ellipse(vertices[i].x, vertices[i].y, 10);
+            }
+          };
+          
+          let getValuesOfXAtParabolasEndpoints = (numberOfParabolas, boundingRadius, centerPadding, sidePadding) => { ... };
+          
+          let getParabolasEndPoints = (valuesOfX, boundingRadius) => { ... };
+          
+          let getVertices = (numberOfVertices, vertexInterspace) => { ... };
+        </code>
+      </pre>
+      <div class="img_frame vertices"></div>
+      <small><a href="#">Source code</a></small>
+      <p>Now let's join the dots!</p>
+      <h3>Drawing the parabolas</h3>
+      <p>So far the function that we coded to graph a parabola took 4 arguments:
+      </p>
+      <ul>
+        <li>\(focalLength\),</li>
+        <li>\(parabolaWidth\),</li>
+        <li>\(pointsPerParabola\),</li>
+        <li>\(distanceFromOrigin\).</li>
+      </ul>
+      <p>But now after setting the right proportions we are left with these 3 arguments:</p>
+      <ul>
+        <li>\(endPoint\),</li>
+        <li>\(vertex\),</li>
+        <li>\(pointsPerParabola\).</li>
+      </ul>
+      <p>Note that parameters \(focalLength\), \(parabolaWidth\) and \(distanceFromOrigin\) are missing now. That is
+        unfortunate because the equation we use needs these parameters to calculate the coordinates of a parabola.</p>
+      <p>We must retrieve the initial parameters:</p>
+      <ul>
+        <li>the number of \(pointsPerParabola\) remains unchanged,</li>
+        <li>the \(parabolaWidth\) equals \(2*endPoint.x\),</li>
+        <li>the \(distanceFromOrigin\) equals \(vertex.y\),</li>
+        <li>but what about the\(focalLength\)?</li>
+      </ul>
+      <p>It turns out it is possible to calculate the value of the focal length from the coordinates of a single
+        point on the parabola. Let's rearrange the equation of a parabola so that \(focalLength\) becomes a function
+        of
+        \(x\), \(y\) and \(distanceFromOrigin\): </p>
+      <small><a href="https://www.wolframalpha.com/input/?i=solve+for+f%3A+y%3Dx%5E2%2F%284*f%29%2Bv">Equation
+          solver</a></small>
+      <p>$$focalLength=-\frac{x^2}{4*(distanceFromOrigin-y)}$$</p>
+      <p>Translated into code it gives us something like this:</p>
+      <pre>
+        <code class="language-js">      
+          let getFocalLengthFromPointAndDistanceFromOrigin = (point, distanceFromOrigin) => {
+            return -pow(point.x, 2) / (4 * (distanceFromOrigin - point.y));
+          }
+        </code>
+      </pre>
+      <p>Which then enables us to write a new function that makes nested parabolas:</p>
+      <pre>
+        <code class="language-js">      
+          let getNestedParabolasCoordinates = (numberOfParabolas, endPoints, pointsPerParabola, vertices) => {
+           
+            vertices.reverse();
+            let coordinates = [];
+
+            for (let i = 0; i &lt; numberOfParabolas; i++) {
+              let distanceFromOrigin = vertices[i].y,
+                focalLength = getFocalLengthFromPointAndDistanceFromOrigin(endPoints[i], distanceFromOrigin),
+                parabolaWidth = endPoints[i].x * 2;
+
+              let parabolaCoordinates = getParabolaCoordinates(focalLength, parabolaWidth, pointsPerParabola, distanceFromOrigin);
+              coordinates.push(parabolaCoordinates);
+            }
+            return coordinates;
+          };
+        </code>
+      </pre>
+      <p>The array of vertices is reversed so that the points are ordered from bottom to top. This is important
+        for the coupling with the array of end-points.</p>
+      <p>Let's plug everything together:</p>
+      <pre>
+        <code class="language-js">      
+          let boundingRadius = 250,
+          numberOfParabolas = 6;
+          let endpoints = [],
+            vertices = [],
+            nestedParabolasCoordinates = [];
+          
+          function setup() {
+            createCanvas(windowWidth, windowHeight, WEBGL);
+          
+            let centerPadding = 50,
+              sidePadding = 10,
+              vertexInterspace = 15,
+              pointsPerParabola = 9;
+            let valuesOfX = getValuesOfXAtParabolasEndpoints(numberOfParabolas, boundingRadius, centerPadding, sidePadding);
+          
+            endPoints = getParabolasEndPoints(valuesOfX, boundingRadius);
+            vertices = getParabolasVertices(numberOfParabolas, vertexInterspace);
+            nestedParabolasCoordinates = getNestedParabolasCoordinates(numberOfParabolas, endPoints, pointsPerParabola, vertices);
+          };
+          
+          function draw() {
+            noFill();
+            strokeWeight(1.5);
+            for (let parabolaCoordinates of nestedParabolasCoordinates) {
+              drawLineFromCoordinates(parabolaCoordinates);
+            }
+          
+            // ellipse(0, 0, boundingRadius * 2);
+          
+            // fill("black");
+            // for (let i = 0; i &lt; numberOfParabolas; i++) {
+            //   ellipse(endPoints[i].x, endPoints[i].y, 10);
+            //   ellipse(-endPoints[i].x, endPoints[i].y, 10);
+            //   ellipse(vertices[i].x, vertices[i].y, 10);
+            // }
+          };
+          
+          let getValuesOfXAtParabolasEndpoints = (numberOfParabolas, boundingRadius, centerPadding, sidePadding) => { ... };
+          
+          let getParabolasEndPoints = (valuesOfX, boundingRadius) => { ... };
+          
+          let getParabolasVertices = (numberOfParabolas, vertexInterspace) => { ... };
+          
+          let getNestedParabolasCoordinates = (numberOfParabolas, endPoints, pointsPerParabola, vertices) => { ... };
+          
+          let getParabolaCoordinates = (focalLength, parabolaWidth, pointsPerParabola, distanceFromOrigin) => { ... };
+          
+          let getFocalLengthFromPointAndDistanceFromOrigin = (point, distanceFromOrigin) => { ... };
+          
+          let drawLineFromCoordinates = (coordinates) => { ... };
+        </code>
+      </pre>
+      <div class="img_frame circumscribed_parabolas_1"></div>
+      <div class="img_frame circumscribed_parabolas_2"></div>
+      <small><a href="#">Source code</a></small>
+      <p>Great! We are one step away from drawing nested paraboloids.</p>
+      <h3>Drawing the hyperboloids</h3>
+      <p>What we have done in the previous part changes the logic of the function that returns the coordinates of
+        nested paraboloids.</p>
+      <p>Now we need to write a function that takes a predefined set of parabolas as an input then returns
+        sections of paraboloids:
+      </p>
+      <pre>
+        <code class="language-js">      
+          let getNestedParaboloidCoordinates = (nestedParabolasCoordinates, numberOfRotations) => {
+            let coordinates = [];
+            for (let parabolaCoordinates of nestedParabolasCoordinates) {
+              let paraboloidCoordinates = getSectionsOfParaboloid(parabolaCoordinates, numberOfRotations);
+              coordinates.push(paraboloidCoordinates);
+            }
+            return coordinates;
+          };
+        </code>
+      </pre>
+      <p>Our program now looks like this:
+      </p>
+      <pre>
+        <code class="language-js">      
+          let nestedParaboloidCoordinates = [];
+
+          function setup() {
+            createCanvas(windowWidth, windowHeight, WEBGL);
+          
+            let boundingRadius = 250,
+              numberOfParabolas = 6,
+              centerPadding = 50,
+              sidePadding = 10,
+              vertexInterspace = 15,
+              pointsPerParabola = 9,
+              numberOfRotations = 12;
+            let valuesOfX = getValuesOfXAtParabolasEndpoints(numberOfParabolas, boundingRadius, centerPadding, sidePadding),
+              endPoints = getParabolasEndPoints(valuesOfX, boundingRadius),
+              vertices = getParabolasVertices(numberOfParabolas, vertexInterspace);
+            let nestedParabolasCoordinates = getNestedParabolasCoordinates(numberOfParabolas, endPoints, pointsPerParabola, vertices);
+          
+            nestedParaboloidCoordinates = getNestedParaboloidCoordinates(nestedParabolasCoordinates, numberOfRotations);
+          };
+          
+          function draw() {
+            for (let paraboloidCoordinates of nestedParaboloidCoordinates) {
+              for (let i = 0; i &lt; paraboloidCoordinates.length - 1; i++) {
+                drawTriangleStripFromTwoCurves(paraboloidCoordinates[i], paraboloidCoordinates[i + 1]);
+              }
+            }
+          };
+          
+          let getValuesOfXAtParabolasEndpoints = (numberOfParabolas, boundingRadius, centerPadding, sidePadding) => { ... };
+          
+          let getParabolasEndPoints = (valuesOfX, boundingRadius) => { ... };
+          
+          let getParabolasVertices = (numberOfParabolas, vertexInterspace) => { ... };
+          
+          let getNestedParabolasCoordinates = (numberOfParabolas, endPoints, pointsPerParabola, vertices) => { ... };
+          
+          let getParabolaCoordinates = (focalLength, parabolaWidth, pointsPerParabola, distanceFromOrigin) => { ... };
+          
+          let getFocalLengthFromPointAndDistanceFromOrigin = (point, distanceFromOrigin) => { ... };
+          
+          let getNestedParaboloidCoordinates = (nestedParabolasCoordinates, numberOfRotations) => { ... };
+
+          let getSectionsOfParaboloid = (parabolaCoordinates, numberOfRotations) => { ... };
+          
+          let getCylindricalCoordinates = (point, numberOfRotations) => { ... };
+          
+          let drawTriangleStripFromTwoCurves = (coordinates1, coordinates2) => { ... };
+        </code>
+      </pre>
+      <div class="img_frame circumscribed_paraboloids"></div>
+      <small><a href="#">Source code</a></small>
+      <p>With twelve functions our program is becoming relatively big. For the two last parts of this tutorial we are
+        going to stop adding new functions and focus mainly on \(draw()\).</p>
+    </section>
+
+    <section>
+      <h2>Animating nested paraboloids</h2>
+      <p>Drawing something in motion means that on each new frame the image will slightly
+        differ from the previous one.</p>
+      <p>Therefore the first thing to do in \(draw()\) is to call the function
+        <a href="https://p5js.org/reference/#/p5/clear">\(clear()\)</a> that erases the images previously drawn.
+        Otherwise we would be adding drawings on top of each other and keeping visible the trace of movement.</p>
+      <p>Between each frame we are going to use <a href="https://p5js.org/reference/#/p5/rotateX">rotateX()</a> and <a
+          href="https://p5js.org/reference/#/p5/rotateZ">rotateZ()</a> simultaneously and play with a rotation speed
+        to give the impression that the shape is spinning in a random manner around its center:</p>
+      <pre>
+        <code class="language-js">      
+          let nestedParaboloidCoordinates = [],
+            rotationSpeed = 0.005,
+            angle = 0;
+
+          function setup() {
+            createCanvas(windowWidth, windowHeight, WEBGL);
+
+            let boundingRadius = 250,
+              numberOfParabolas = 6,
+              centerPadding = 50,
+              sidePadding = 10,
+              vertexInterspace = 15,
+              pointsPerParabola = 9,
+              numberOfRotations = 12;
+            let valuesOfX = getValuesOfXAtParabolasEndpoints(numberOfParabolas, boundingRadius, centerPadding, sidePadding),
+              endPoints = getParabolasEndPoints(valuesOfX, boundingRadius),
+              vertices = getParabolasVertices(numberOfParabolas, vertexInterspace);
+            let nestedParabolasCoordinates = getNestedParabolasCoordinates(numberOfParabolas, endPoints, pointsPerParabola, vertices);
+
+            nestedParaboloidCoordinates = getNestedParaboloidCoordinates(nestedParabolasCoordinates, numberOfRotations);
+          };
+
+          function draw() {
+            clear();
+
+            angle += rotationSpeed;
+            rotateX(angle);
+            rotateZ(angle * 0.1);
+
+            for (let paraboloidCoordinates of nestedParaboloidCoordinates) {
+              for (let i = 0; i &lt paraboloidCoordinates.length - 1; i++) {
+                drawTriangleStripFromTwoCurves(paraboloidCoordinates[i], paraboloidCoordinates[i + 1]);
+              }
+            }
+          };
+          
+          let getValuesOfXAtParabolasEndpoints = (numberOfParabolas, boundingRadius, centerPadding, sidePadding) => { ... };
+          
+          let getParabolasEndPoints = (valuesOfX, boundingRadius) => { ... };
+          
+          let getParabolasVertices = (numberOfParabolas, vertexInterspace) => { ... };
+          
+          let getNestedParabolasCoordinates = (numberOfParabolas, endPoints, pointsPerParabola, vertices) => { ... };
+          
+          let getParabolaCoordinates = (focalLength, parabolaWidth, pointsPerParabola, distanceFromOrigin) => { ... };
+          
+          let getFocalLengthFromPointAndDistanceFromOrigin = (point, distanceFromOrigin) => { ... };
+          
+          let getNestedParaboloidCoordinates = (nestedParabolasCoordinates, numberOfRotations) => { ... };
+
+          let getSectionsOfParaboloid = (parabolaCoordinates, numberOfRotations) => { ... };
+          
+          let getCylindricalCoordinates = (point, numberOfRotations) => { ... };
+          
+          let drawTriangleStripFromTwoCurves = (coordinates1, coordinates2) => { ... };
+        </code>
+      </pre>
+      <a href="https://www.youtube.com/watch?v=6TPVoB4uQCU"></a>
+      <div class="img_frame animated_paraboloids"></div>
+      <small><a href="#">Source code</a></small>
+      <p>Drawing in motion enables a better understanding of the volume in
+        space.</p>
+      <p>What if we added another dimension to this shape with colors and transparencies?</p>
+    </section>
+
+    <section>
+      <h2>Bonus: rendering with alpha transparencies</h2>
+      <p>Before playing with transparency make sure to load the version <em>\(0.6.0\)</em> of the p5.js library. With a
+        different version you might experience issues with the rendering of surfaces and alpha transparencies.</p>
+      <pre>
+        <code class="language-html">      
+          &lt;!DOCTYPE html>
+          &lt;html lang="en">
+          
+          &lt;head>
+            &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.min.js">&lt;/script>
+            &lt;meta charset="utf-8" />
+          &lt;/head>
+          
+          &lt;body>
+            &lt;script src="sketch.js">&lt;/script>
+          &lt;/body>
+          
+          &lt;/html>
+        </code>
+      </pre>
+      <p>Now in \(setup()\) let's add two lines of code: </p>
+      <ul>
+        <li>\(setAttributes("alpha", false)\) enables the colors to remain vivid even with translucency.</li>
+        <li>\(colorMode(HSB, 360, 100, 100, 1)\) indicates that we are going to use <a
+            href="https://p5js.org/reference/#/p5/HSB">HSB</a> mode
+          instead of RGB.</li>
+      </ul>
+      <pre>
+        <code class="language-javascript">      
+          function setup() {
+            createCanvas(windowWidth, windowHeight, WEBGL);
+          
+            setAttributes("alpha", false);
+            colorMode(HSB, 360, 100, 100, 1);
+          
+            let boundingRadius = 250,
+              numberOfParabolas = 6,
+              centerPadding = 50,
+              sidePadding = 10,
+              vertexInterspace = 15,
+              pointsPerParabola = 30,
+              numberOfRotations = 30;
+            let valuesOfX = getValuesOfXAtParabolasEndpoints(numberOfParabolas, boundingRadius, centerPadding, sidePadding),
+              endPoints = getParabolasEndPoints(valuesOfX, boundingRadius),
+              vertices = getParabolasVertices(numberOfParabolas, vertexInterspace);
+            let nestedParabolasCoordinates = getNestedParabolasCoordinates(numberOfParabolas, endPoints, pointsPerParabola, vertices);
+          
+            nestedParaboloidCoordinates = getNestedParaboloidCoordinates(nestedParabolasCoordinates, numberOfRotations);
+          };
+        </code>
+      </pre>
+      <p>HSB stands for Hue, Saturation and Brightness. On top of that we are going to play with alpha to
+        control the level of transparency for each color.</p>
+      <p>In \(draw()\) let's declare these variables before using them in the loop that draws our shape: </p>
+      <pre>
+        <code class="language-javascript">      
+          function draw() {
+            noLoop();
+            background("white");
+          
+            angle += rotationSpeed;
+            rotateX(angle);
+            rotateZ(angle * 0.1);
+            
+            let hue = 250,
+              saturation = 50,
+              brightness = 80,
+              alpha = 0.15;
+          
+            noStroke();
+            for (let paraboloidCoordinates of nestedParaboloidCoordinates) {
+              for (let i = 0; i &lt; paraboloidCoordinates.length - 1; i++) {
+                fill(hue, saturation, brightness, alpha);
+                drawTriangleStripFromTwoCurves(paraboloidCoordinates[i], paraboloidCoordinates[i + 1]);
+              }
+            }
+          };
+        </code>
+      </pre>
+      <p>Note that I replaced \(clear()\) by <a
+          href="https://p5js.org/reference/#/p5/background">\(background("white")\)</a> because in this earlier version
+        of the library \(clear()\) does not produce the expected result. </p>
+      <p>You can use <a href="https://p5js.org/reference/#/p5/noLoop">\(noLoop()\)</a> to freeze the image while you are
+        doing adjustments.</p>
+      <p>If you run thin program you will see the shape with faded colors:</p>
+      <div class="img_frame final_faded"></div>
+      <p>And finally let's slightly change the HSBA values of each paraboloid:</p>
+      <pre>
+        <code class="language-javascript">      
+          function draw() {
+            // noLoop();
+            background("white");
+          
+            angle += rotationSpeed;
+            rotateX(angle);
+            rotateZ(angle * 0.1);
+          
+            let hue = 250,
+              saturation = 50,
+              brightness = 80,
+              alpha = 0.15;
+          
+            noStroke();
+            for (let paraboloidCoordinates of nestedParaboloidCoordinates) {
+              for (let i = 0; i &lt; paraboloidCoordinates.length - 1; i++) {
+                fill(hue, saturation, brightness, alpha);
+                drawTriangleStripFromTwoCurves(paraboloidCoordinates[i], paraboloidCoordinates[i + 1]);
+              }
+              hue -= 5;
+              brightness -= (20) / 5;
+              saturation += 10;
+              alpha += 0.075;
+            }
+          };
+        </code>
+      </pre>
+      <div class="img_frame final_animated"></div>
+      <small><a href="#">Source code</a></small>
+      <p>Voilà!</p>
+    </section>
+
+  </main>
+</body>
+
+
+</html>
