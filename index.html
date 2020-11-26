@@ -22,10 +22,12 @@
 
   <main>
     <section>
-      <h1>How to make nested paraboloids</h1>
+      <h1>How to draw nested paraboloids</h1>
       <p>On this tutorial you will see how to draw and animate nested paraboloids using the library <a
           href="p5.js">p5.js</a> with <a href="https://en.wikipedia.org/wiki/WebGL">WebGL</a>.</p>
-      <div class="img_frame final_animated"></div>
+      <div class="img_frame final"></div>
+      <p>Check <a href="https://sketch.francoisfarnault.fr/cupolas/index">this webpage</a> to see the final shape in
+        motion</p>
       <p>
         The original inspiration for this drawing comes from the pinecone-like shape that
         appear at the top of <a href="https://societycentered.design">the Society Centred Design
@@ -75,10 +77,13 @@
       <p>sketch.js is the page where we are going to write the logic of our program. The first line of <a
           href="https://p5js.org/reference/#/p5/setup">\(setup()\)</a> creates a canvas at the dimensions of the
         browser's window.</p>
-      <p>It also specifies that we are using a 3 dimensional coordinates system with WebGL. The point of coordinates
-        \(\left({0,0,0}\right)\) is
-        located at the center of the screen, the X axis is horizontal, the Y axis is vertical, and the Z axis goes from
-        front to back.</p>
+      <p>It also specifies that we are using a 3 dimensional coordinates system with WebGL:</p>
+      <ul>
+        <li>the point of coordinates \(\left({0,0,0}\right)\) is located at the center of the screen,</li>
+        <li>the X axis is horizontal,</li>
+        <li>the Y axis is vertical,</li>
+        <li>and the Z axis goes from front to back.</li>
+      </ul>
       <p>The function <a href="https://p5js.org/reference/#/p5/draw">\(draw()\)</a> comes directly after \(setup()\). If
         you are already familiar with p5.js you know that \(draw()\) is a loop that draws the image over and over again.
         This is where we are going to write the code for rendering. </p>
@@ -368,13 +373,12 @@
         </pre>
       <div class="img_frame cylindrical_coordinates"></div>
       <small><a href="#">Source code</a></small>
-      <p>Now we can rotate a point in 3D. How can we replicate this rotation for all the points of a parabola?</p>
+      <p>Now that we can rotate a point in 3D, how can we replicate this rotation for all the points of a parabola?</p>
       <h3>Drawing the sections of a hyperboloid</h3>
       <p>We are going to reuse the code we wrote to calculate the coordinates of the points that make
         a parabola.</p>
       <p>Then we will write a new function that rotates these points around the
-        horizontal axis.</p>
-      <p>This function will output a series of parallel circles that are actually the sections of a
+        horizontal axis. It will output a series of parallel circles that are actually the sections of a
         paraboloid.</p>
       <pre>
         <code class="language-js">      
@@ -428,7 +432,7 @@
       </pre>
       <div class="img_frame paraboloid_sections"></div>
       <small><a href="#">Source code</a></small>
-      <p>A paraboloid is taking shape. Yet it is still made of with lines while what we want is surfaces.</p>
+      <p>A paraboloid is taking shape! Yet it is still made of with lines while what we want is surfaces.</p>
       <p>How can we use
         these sections to generate surfaces?</p>
       <h3>Drawing the surfaces of a paraboloid</h3>
@@ -570,10 +574,9 @@
       </pre>
       <div class="img_frame nested_paraboloids"></div>
       <small><a href="#">Source code</a></small>
-      <p>The pinecone-like structure is there and this shape bears some similarities with the expected result.</p>
+      <p>Nice! The pinecone-like structure is there and this shape bears some similarities with the expected result.</p>
       <p>That being said the way we set \(focalLength\), \(parabolaWidth\), and the \(distanceFromOrigin\) is imprecise
-        and there isn't yet a well
-        identified design pattern for the proportions.
+        and there isn't yet a well identified design pattern for the proportions.
       </p>
       <p>The next part will cover a few additional steps to draw the paraboloids with greater harmony and
         precision.</p>
@@ -804,15 +807,15 @@
         <li>\(pointsPerParabola\),</li>
         <li>\(distanceFromOrigin\).</li>
       </ul>
-      <p>But now after setting the right proportions we are left with these 3 arguments:</p>
+      <p>But now after setting the right proportions we are left with these 3 parameters:</p>
       <ul>
         <li>\(endPoint\),</li>
         <li>\(vertex\),</li>
         <li>\(pointsPerParabola\).</li>
       </ul>
-      <p>Note that parameters \(focalLength\), \(parabolaWidth\) and \(distanceFromOrigin\) are missing now. That is
-        unfortunate because the equation we use needs these parameters to calculate the coordinates of a parabola.</p>
-      <p>We must retrieve the initial parameters:</p>
+      <p>Note that \(focalLength\), \(parabolaWidth\) and \(distanceFromOrigin\) are missing now. We must find a way to
+        retrieve these initial parameters because the equation we use still needs them to calculate the coordinates of a
+        parabola:</p>
       <ul>
         <li>the number of \(pointsPerParabola\) remains unchanged,</li>
         <li>the \(parabolaWidth\) equals \(2*endPoint.x\),</li>
@@ -914,11 +917,11 @@
       <div class="img_frame circumscribed_parabolas_1"></div>
       <div class="img_frame circumscribed_parabolas_2"></div>
       <small><a href="#">Source code</a></small>
-      <p>Great! We are one step away from drawing nested paraboloids.</p>
+      <p>Great! We are only one step away from drawing nested paraboloids.</p>
       <h3>Drawing the hyperboloids</h3>
       <p>What we have done in the previous part changes the logic of the function that returns the coordinates of
         nested paraboloids.</p>
-      <p>Now we need to write a function that takes a predefined set of parabolas as an input then returns
+      <p>Now we need a function that takes a predefined set of parabolas as an input then returns
         sections of paraboloids:
       </p>
       <pre>
@@ -988,7 +991,7 @@
       </pre>
       <div class="img_frame circumscribed_paraboloids"></div>
       <small><a href="#">Source code</a></small>
-      <p>With twelve functions our program is becoming relatively big. For the two last parts of this tutorial we are
+      <p>With twelve functions this program is becoming relatively big. For the two last parts of this tutorial we are
         going to stop adding new functions and focus mainly on \(draw()\).</p>
     </section>
 
@@ -1008,23 +1011,7 @@
             rotationSpeed = 0.005,
             angle = 0;
 
-          function setup() {
-            createCanvas(windowWidth, windowHeight, WEBGL);
-
-            let boundingRadius = 250,
-              numberOfParabolas = 6,
-              centerPadding = 50,
-              sidePadding = 10,
-              vertexInterspace = 15,
-              pointsPerParabola = 9,
-              numberOfRotations = 12;
-            let valuesOfX = getValuesOfXAtParabolasEndpoints(numberOfParabolas, boundingRadius, centerPadding, sidePadding),
-              endPoints = getParabolasEndPoints(valuesOfX, boundingRadius),
-              vertices = getParabolasVertices(numberOfParabolas, vertexInterspace);
-            let nestedParabolasCoordinates = getNestedParabolasCoordinates(numberOfParabolas, endPoints, pointsPerParabola, vertices);
-
-            nestedParaboloidCoordinates = getNestedParaboloidCoordinates(nestedParabolasCoordinates, numberOfRotations);
-          };
+          function setup() { ... };
 
           function draw() {
             clear();
@@ -1071,8 +1058,9 @@
 
     <section>
       <h2>Bonus: rendering with alpha transparencies</h2>
-      <p>Before playing with transparency make sure to load the version <em>\(0.6.0\)</em> of the p5.js library. With a
-        different version you might experience issues with the rendering of surfaces and alpha transparencies.</p>
+      <p>Before playing with transparency make sure to load the version <em>\(0.6.0\)</em> of the p5.js library in
+        index.html. With another version you might experience issues with the rendering of surfaces and alpha
+        transparencies.</p>
       <pre>
         <code class="language-html">      
           &lt;!DOCTYPE html>
@@ -1092,11 +1080,13 @@
       </pre>
       <p>Now in \(setup()\) let's add two lines of code: </p>
       <ul>
-        <li>\(setAttributes("alpha", false)\) enables the colors to remain vivid even with translucency.</li>
-        <li>\(colorMode(HSB, 360, 100, 100, 1)\) indicates that we are going to use <a
+        <li>\(setAttributes("alpha", false)\) to enable the colors to remain vivid even with translucency.</li>
+        <li>\(colorMode(HSB, 360, 100, 100, 1)\) to indicate that we are going to use <a
             href="https://p5js.org/reference/#/p5/HSB">HSB</a> mode
           instead of RGB.</li>
       </ul>
+      <p>HSB stands for Hue, Saturation and Brightness. On top of that we are going to play with alpha to
+        control the level of transparency for each color.</p>
       <pre>
         <code class="language-javascript">      
           function setup() {
@@ -1121,9 +1111,7 @@
           };
         </code>
       </pre>
-      <p>HSB stands for Hue, Saturation and Brightness. On top of that we are going to play with alpha to
-        control the level of transparency for each color.</p>
-      <p>In \(draw()\) let's declare these variables before using them in the loop that draws our shape: </p>
+      <p>In \(draw()\) let's declare the HSBA variables before using them in the loop that draws the shape: </p>
       <pre>
         <code class="language-javascript">      
           function draw() {
@@ -1154,9 +1142,9 @@
         of the library \(clear()\) does not produce the expected result. </p>
       <p>You can use <a href="https://p5js.org/reference/#/p5/noLoop">\(noLoop()\)</a> to freeze the image while you are
         doing adjustments.</p>
-      <p>If you run thin program you will see the shape with faded colors:</p>
+      <p>If you run this program you will see the shape with faded colors:</p>
       <div class="img_frame final_faded"></div>
-      <p>And finally let's slightly change the HSBA values of each paraboloid:</p>
+      <p>Let's improve this by slightly modifying the HSBA values for each paraboloid:</p>
       <pre>
         <code class="language-javascript">      
           function draw() {
