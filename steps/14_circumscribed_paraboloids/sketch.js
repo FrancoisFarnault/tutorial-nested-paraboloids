@@ -54,7 +54,7 @@ let getParabolasVertices = (numberOfParabolas, vertexInterspace) => {
 };
 
 let getNestedParabolasCoordinates = (numberOfParabolas, endPoints, pointsPerParabola, vertices) => {
-  vertices.reverse();
+  endPoints.reverse();
   let coordinates = [];
   for (let i = 0; i < numberOfParabolas; i++) {
     let distanceFromOrigin = vertices[i].y,

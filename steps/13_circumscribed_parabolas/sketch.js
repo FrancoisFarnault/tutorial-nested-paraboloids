@@ -63,12 +63,16 @@ let getParabolasVertices = (numberOfParabolas, vertexInterspace) => {
 };
 
 let getNestedParabolasCoordinates = (numberOfParabolas, endPoints, pointsPerParabola, vertices) => {
-  vertices.reverse();
+
+  endPoints.reverse();
   let coordinates = [];
+
   for (let i = 0; i < numberOfParabolas; i++) {
+
     let distanceFromOrigin = vertices[i].y,
       focalLength = getFocalLengthFromPointAndDistanceFromOrigin(endPoints[i], distanceFromOrigin),
       parabolaWidth = endPoints[i].x * 2;
+
     let parabolaCoordinates = getParabolaCoordinates(focalLength, parabolaWidth, pointsPerParabola, distanceFromOrigin);
     coordinates.push(parabolaCoordinates);
   }

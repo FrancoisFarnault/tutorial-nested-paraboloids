@@ -841,15 +841,16 @@
       <pre>
         <code class="language-js">      
           let getNestedParabolasCoordinates = (numberOfParabolas, endPoints, pointsPerParabola, vertices) => {
-           
-            vertices.reverse();
-            let coordinates = [];
 
+            endPoints.reverse();
+            let coordinates = [];
+          
             for (let i = 0; i &lt; numberOfParabolas; i++) {
+          
               let distanceFromOrigin = vertices[i].y,
                 focalLength = getFocalLengthFromPointAndDistanceFromOrigin(endPoints[i], distanceFromOrigin),
                 parabolaWidth = endPoints[i].x * 2;
-
+          
               let parabolaCoordinates = getParabolaCoordinates(focalLength, parabolaWidth, pointsPerParabola, distanceFromOrigin);
               coordinates.push(parabolaCoordinates);
             }
@@ -857,7 +858,7 @@
           };
         </code>
       </pre>
-      <p>The array of vertices is reversed so that the points are ordered from bottom to top. This is important
+      <p>The array of endpoints is reversed so that the points are ordered from top to bottom. This is important
         for the coupling with the array of end-points.</p>
       <p>Let's plug everything together:</p>
       <pre>
@@ -1067,7 +1068,7 @@
           &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.min.js">&lt;/script>
         </code>
       </pre>
-      <p>Let's have a look at the gradient of colors that goes from the outside to the inside of the shape:</p>
+      <p>Let's have a look at the gradient of colors that goes from the inside to the outside of the shape:</p>
       <div class="img_frame color_gradient"></div>
       <div class="img_frame final"></div>
       <!-- <p>Of course you can make your own gradient if you prefer other colors. I prepared a sketch that

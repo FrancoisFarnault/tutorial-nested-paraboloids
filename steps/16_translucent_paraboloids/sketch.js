@@ -24,16 +24,17 @@ function setup() {
   colorMode(RGB, 255, 255, 255, 1);
 
   let firstColor = color(0);
-  firstColor.setRed(125);
-  firstColor.setGreen(100);
-  firstColor.setBlue(255);
-  firstColor.setAlpha(0.25);
+  firstColor.setRed(0);
+  firstColor.setGreen(25);
+  firstColor.setBlue(125);
+  firstColor.setAlpha(0.75);
 
   let lastColor = color(0);
-  lastColor.setRed(0);
-  lastColor.setGreen(25);
-  lastColor.setBlue(125);
-  lastColor.setAlpha(0.75);
+  lastColor.setRed(125);
+  lastColor.setGreen(100);
+  lastColor.setBlue(255);
+  lastColor.setAlpha(0.25);
+
 
   let numberOfColors = numberOfParabolas,
     transitionSpeed = 0.5;
@@ -86,7 +87,7 @@ let getParabolasVertices = (numberOfParabolas, vertexInterspace) => {
 };
 
 let getNestedParabolasCoordinates = (numberOfParabolas, endPoints, pointsPerParabola, vertices) => {
-  vertices.reverse();
+  endPoints.reverse();
   let coordinates = [];
   for (let i = 0; i < numberOfParabolas; i++) {
     let distanceFromOrigin = vertices[i].y,
