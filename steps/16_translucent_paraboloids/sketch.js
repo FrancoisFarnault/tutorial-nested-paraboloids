@@ -1,12 +1,10 @@
 let nestedParaboloidCoordinates = [],
+  colorGradient = [],
   rotationSpeed = 0.005,
   angle = 0;
 
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
-
-  setAttributes('alpha', false);
-  colorMode(HSB, 360, 100, 100, 1);
 
   let boundingRadius = 250,
     numberOfParabolas = 6,
@@ -21,31 +19,42 @@ function setup() {
   let nestedParabolasCoordinates = getNestedParabolasCoordinates(numberOfParabolas, endPoints, pointsPerParabola, vertices);
 
   nestedParaboloidCoordinates = getNestedParaboloidCoordinates(nestedParabolasCoordinates, numberOfRotations);
+
+  setAttributes('alpha', false);
+  colorMode(RGB, 255, 255, 255, 1);
+
+  let firstColor = color(0);
+  firstColor.setRed(125);
+  firstColor.setGreen(100);
+  firstColor.setBlue(255);
+  firstColor.setAlpha(0.25);
+
+  let lastColor = color(0);
+  lastColor.setRed(0);
+  lastColor.setGreen(25);
+  lastColor.setBlue(125);
+  lastColor.setAlpha(0.75);
+
+  let numberOfColors = numberOfParabolas,
+    transitionSpeed = 0.5;
+
+  colorGradient = getInterpolatedColors(firstColor, lastColor, numberOfColors, transitionSpeed);
 };
 
 function draw() {
-  // noLoop();
   background("white");
+  noStroke();
 
   angle += rotationSpeed;
   rotateX(angle);
   rotateZ(angle * 0.1);
 
-  let hue = 250,
-    saturation = 50,
-    brightness = 80,
-    alpha = 0.15;
-
-  noStroke();
-  for (let paraboloidCoordinates of nestedParaboloidCoordinates) {
-    for (let i = 0; i < paraboloidCoordinates.length - 1; i++) {
-      fill(hue, saturation, brightness, alpha);
-      drawTriangleStripFromTwoCurves(paraboloidCoordinates[i], paraboloidCoordinates[i + 1]);
+  for (let i = 0; i < nestedParaboloidCoordinates.length; i++) {
+    fill(colorGradient[i]);
+    let sectionsOfParaboloid = nestedParaboloidCoordinates[i];
+    for (let j = 0; j < sectionsOfParaboloid.length - 1; j++) {
+      drawTriangleStripFromTwoCurves(sectionsOfParaboloid[j], sectionsOfParaboloid[j + 1]);
     }
-    hue -= 5;
-    brightness -= (20) / 5;
-    saturation += 10;
-    alpha += 0.075;
   }
 };
 
@@ -132,6 +141,19 @@ let getCylindricalCoordinates = (point, numberOfRotations) => {
     coordinates.push(createVector(x, y, z));
   }
   return coordinates;
+};
+
+let getInterpolatedColors = (firstColor, lastColor, numberOfColors, transitionSpeed) => {
+  let gradient = [];
+  for (let i = 0; i < numberOfColors; i++) {
+
+    let interpolationFactor = ((pow(i, 1 / transitionSpeed) * 100 / (pow(numberOfColors - 1, 1 / transitionSpeed))) / 100);
+    interpolationFactor.toFixed(2);
+
+    let intermediateColor = lerpColor(firstColor, lastColor, interpolationFactor);
+    gradient.push(intermediateColor);
+  }
+  return gradient;
 };
 
 let drawTriangleStripFromTwoCurves = (coordinates1, coordinates2) => {

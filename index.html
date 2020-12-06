@@ -27,7 +27,7 @@
           href="p5.js">p5.js</a> with <a href="https://en.wikipedia.org/wiki/WebGL">WebGL</a>.</p>
       <div class="img_frame final"></div>
       <p>Check <a href="https://sketch.francoisfarnault.fr/cupolas/index">this webpage</a> to see the final shape in
-        motion</p>
+        motion.</p>
       <p>
         The original inspiration for this drawing comes from the pinecone-like shape that
         appear at the top of <a href="https://societycentered.design">the Society Centred Design
@@ -991,8 +991,8 @@
       </pre>
       <div class="img_frame circumscribed_paraboloids"></div>
       <small><a href="#">Source code</a></small>
-      <p>With twelve functions this program is becoming relatively big. For the two last parts of this tutorial we are
-        going to stop adding new functions and focus mainly on \(draw()\).</p>
+      <p>With twelve functions this program is becoming relatively big. In the next part we are
+        going focus solely on \(draw()\).</p>
     </section>
 
     <section>
@@ -1058,122 +1058,224 @@
 
     <section>
       <h2>Bonus: rendering with alpha transparencies</h2>
-      <p>Before playing with transparency make sure to load the version <em>\(0.6.0\)</em> of the p5.js library in
-        index.html. With another version you might experience issues with the rendering of surfaces and alpha
-        transparencies.</p>
+      <p>Before playing with alpha make sure to load the version <em>\(0.6.0\)</em> of the p5.js library in
+        index.html. With another version you might experience issues with the rendering of surfaces and transparencies.
+      </p>
       <pre>
         <code class="language-html">      
-          &lt;!DOCTYPE html>
-          &lt;html lang="en">
-          
-          &lt;head>
-            &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.min.js">&lt;/script>
-            &lt;meta charset="utf-8" />
-          &lt;/head>
-          
-          &lt;body>
-            &lt;script src="sketch.js">&lt;/script>
-          &lt;/body>
-          
-          &lt;/html>
+          &lt;!-- index.html> -->
+          &lt;script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.6.0/p5.min.js">&lt;/script>
         </code>
       </pre>
-      <p>Now in \(setup()\) let's add two lines of code: </p>
-      <ul>
-        <li>\(setAttributes("alpha", false)\) to enable the colors to remain vivid even with translucency.</li>
-        <li>\(colorMode(HSB, 360, 100, 100, 1)\) to indicate that we are going to use <a
-            href="https://p5js.org/reference/#/p5/HSB">HSB</a> mode
-          instead of RGB.</li>
-      </ul>
-      <p>HSB stands for Hue, Saturation and Brightness. On top of that we are going to play with alpha to
-        control the level of transparency for each color.</p>
+      <p>Let's have a look at the gradient of colors that goes from the outside to the inside of the shape:</p>
+      <div class="img_frame color_gradient"></div>
+      <div class="img_frame final"></div>
+      <!-- <p>Of course you can make your own gradient if you prefer other colors. I prepared a sketch that
+        will help you to set each color transition with precision:</p>
+      <p><a href="https://codepen.io/francoisfarnault/pen/MWjaVoa">https://codepen.io/francoisfarnault/pen/MWjaVoa</a>
+      </p> -->
+      <p>The idea of a gradient is to start with two colors, then to calculate all the shades in between.</p>
+      <p>In \(setup()\) let's declare 2 colors with <a href="https://p5js.org/reference/#/p5/color">\(color()\)</a>:</p>
       <pre>
-        <code class="language-javascript">      
+        <code class="language-javascript"> 
           function setup() {
             createCanvas(windowWidth, windowHeight, WEBGL);
           
-            setAttributes("alpha", false);
-            colorMode(HSB, 360, 100, 100, 1);
+            /* ... */
           
-            let boundingRadius = 250,
-              numberOfParabolas = 6,
-              centerPadding = 50,
-              sidePadding = 10,
-              vertexInterspace = 15,
-              pointsPerParabola = 30,
-              numberOfRotations = 30;
-            let valuesOfX = getValuesOfXAtParabolasEndpoints(numberOfParabolas, boundingRadius, centerPadding, sidePadding),
-              endPoints = getParabolasEndPoints(valuesOfX, boundingRadius),
-              vertices = getParabolasVertices(numberOfParabolas, vertexInterspace);
-            let nestedParabolasCoordinates = getNestedParabolasCoordinates(numberOfParabolas, endPoints, pointsPerParabola, vertices);
+            setAttributes('alpha', false);
+            colorMode(RGB, 255, 255, 255, 1);
           
-            nestedParaboloidCoordinates = getNestedParaboloidCoordinates(nestedParabolasCoordinates, numberOfRotations);
+            let firstColor = color(0);
+            firstColor.setRed(125);
+            firstColor.setGreen(100);
+            firstColor.setBlue(255);
+            firstColor.setAlpha(0.25);
+          
+            let lastColor = color(0);
+            lastColor.setRed(0);
+            lastColor.setGreen(25);
+            lastColor.setBlue(125);
+            lastColor.setAlpha(0.75);
+          
+            let numberOfColors = numberOfParabolas,
+              transitionSpeed = 0.5;
+          
+            colorGradient = getInterpolatedColors(firstColor, lastColor, numberOfColors, transitionSpeed);
           };
         </code>
       </pre>
-      <p>In \(draw()\) let's declare the HSBA variables before using them in the loop that draws the shape: </p>
+      <p>The line \(setAttributes("alpha", false)\); enables the colors to remain vivid even with
+        translucency.</p>
+      <p>The color mode is set to RGB (Red, Green, Blue). Each color has a gauge that
+        goes from 0 to 255. On top of that we use Alpha with a gauge from 0 to 1 to
+        control the level of transparency.</p>
+      <p>The number of colors equals the number of parabolas since we want one color per paraboloid.</p>
+      <p>There is also a transition speed that is here to fine-tune the speed at which the first color turns into the
+        last one.</p>
+      <p>Let's write the function that will actually make the gradient:</p>
       <pre>
         <code class="language-javascript">      
+          let getInterpolatedColors = (firstColor, lastColor, numberOfColors, transitionSpeed) => {
+            let gradient = [];
+            for (let i = 0; i &lt; numberOfColors; i++) {
+          
+              let interpolationFactor = ((pow(i, 1 / transitionSpeed) * 100 / (pow(numberOfColors - 1, 1 / transitionSpeed))) / 100);
+              interpolationFactor.toFixed(2);
+
+              let intermediateColor = lerpColor(firstColor, lastColor, interpolationFactor);
+              gradient.push(intermediateColor);
+            }
+            return gradient;
+          };
+        </code>
+      </pre>
+      <p>The name of this function refers to interpolation as we are using <a
+          href="https://p5js.org/reference/#/p5/lerpColor">\(lerpColor()\)</a>. "lerp" means "<a
+          href="https://en.wikipedia.org/wiki/Linear_interpolation">linear
+          interpolation</a>" which is a way to find a range of values between two values.</p>
+      <p>\(lerpColor()\) takes a third argument that I call the \(interpolationFactor\). It goes between 0 and 1 and
+        can be seen as a given distance between the two colors. For example:</p>
+      <ul>
+        <li>0.1 will be very close to the first color,</li>
+        <li>0,5 will be a perfect mix between the two,</li>
+        <li>and 1 will be the last color.</li>
+      </ul>
+      <p>\(interpolationFactor\) can be a simple
+        percentage divided by 100:</p>
+      <pre>
+        <code class="language-javascript">      
+          interpolationFactor = (i * 100 / (numberOfColors - 1)) / 100;
+        </code>
+      </pre>
+      <p>But I figured it would be nice to add another parameter to control the speed of the transition:</p>
+      <pre>
+        <code class="language-javascript">      
+          interpolationFactor = ((pow(i, 1 / transitionSpeed) * 100 / (pow(numberOfColors - 1, 1 / transitionSpeed))) / 100);
+        </code>
+      </pre>
+      <p>With this change the interval between each interpolation becomes exponential: </p>
+      <ul>
+        <li>in case \( n>1 \), then \( x^{1/n} &lt; x \)</li>
+        <li>in case \( n&lt;1 \), then \( x^{1/n} > x \)</li>
+      </ul>
+      <small><a href="https://en.wikipedia.org/wiki/Nth_root">Wikipedia source</a></small>
+      <p>Check these exemples of the same colors with 3 different transition speeds:</p>
+      <table>
+        <tr>
+          <td>
+          </td>
+          <td>
+            <div class="img_frame color_transition_1"></div>
+          </td>
+          <td>
+            <div class="img_frame color_transition_2"></div>
+          </td>
+          <td>
+            <div class="img_frame color_transition_3"></div>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <p>Transition speed :</p>
+          </td>
+          <td>
+            <p>0.5</p>
+          </td>
+          <td>
+            <p>1</p>
+          </td>
+          <td>
+            <p>2</p>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <p>Interpolation factors :</p>
+          </td>
+          <td>
+            <p> </br>0
+              </br>0.04
+              </br>0.16
+              </br>0.36
+              </br>0.64
+              </br>1</p>
+          </td>
+          <td>
+            <p> </br>0
+              </br>0.2
+              </br>0.4
+              </br>0.6
+              </br>0.8
+              </br>1</p>
+          </td>
+          <td>
+            <p> </br>0
+              </br>0.45
+              </br>0.63
+              </br>0.77
+              </br>0.89
+              </br>1</p>
+          </td>
+        </tr>
+      </table>
+      <p>This transition speed gives you an ultimate way to control the contrast of color temperatures, transparencies
+        and spatial proportions.
+      </p>
+      <p>Now let's implement these changes in \(draw()\):</p>
+      <pre>
+        <code class="language-javascript">      
+          let nestedParaboloidCoordinates = [],
+          colorGradient = [],
+          rotationSpeed = 0.005,
+          angle = 0;
+        
+          function setup() { /* ... */ };
+          
           function draw() {
-            noLoop();
             background("white");
+            noStroke();
           
             angle += rotationSpeed;
             rotateX(angle);
             rotateZ(angle * 0.1);
-            
-            let hue = 250,
-              saturation = 50,
-              brightness = 80,
-              alpha = 0.15;
-          
-            noStroke();
-            for (let paraboloidCoordinates of nestedParaboloidCoordinates) {
-              for (let i = 0; i &lt; paraboloidCoordinates.length - 1; i++) {
-                fill(hue, saturation, brightness, alpha);
-                drawTriangleStripFromTwoCurves(paraboloidCoordinates[i], paraboloidCoordinates[i + 1]);
+
+            for (let i = 0; i &lt; nestedParaboloidCoordinates.length; i++) {
+              fill(colorGradient[i]);
+              let sectionsOfParaboloid = nestedParaboloidCoordinates[i];
+              for (let j = 0; j &lt; sectionsOfParaboloid.length - 1; j++) {
+                drawTriangleStripFromTwoCurves(sectionsOfParaboloid[j], sectionsOfParaboloid[j + 1]);
               }
             }
           };
+          
+          let getValuesOfXAtParabolasEndpoints = (numberOfParabolas, boundingRadius, centerPadding, sidePadding) => { /* ... */ };
+          
+          let getParabolasEndPoints = (valuesOfX, boundingRadius) => { /* ... */ };
+          
+          let getParabolasVertices = (numberOfParabolas, vertexInterspace) => { /* ... */ };
+          
+          let getNestedParabolasCoordinates = (numberOfParabolas, endPoints, pointsPerParabola, vertices) => { /* ... */ };
+          
+          let getParabolaCoordinates = (focalLength, parabolaWidth, pointsPerParabola, distanceFromOrigin) => { /* ... */ };
+          
+          let getFocalLengthFromPointAndDistanceFromOrigin = (point, distanceFromOrigin) => { /* ... */ };
+          
+          let getNestedParaboloidCoordinates = (nestedParabolasCoordinates, numberOfRotations) => { /* ... */ };
+          
+          let getSectionsOfParaboloid = (parabolaCoordinates, numberOfRotations) => { /* ... */ };
+          
+          let getCylindricalCoordinates = (point, numberOfRotations) => { /* ... */ };
+          
+          let getInterpolatedColors = (firstColor, lastColor, numberOfColors, transitionSpeed) => { /* ... */ };
+          
+          let drawTriangleStripFromTwoCurves = (coordinates1, coordinates2) => { /* ... */ };
         </code>
       </pre>
       <p>Note that I replaced \(clear()\) by <a
-          href="https://p5js.org/reference/#/p5/background">\(background("white")\)</a> because in this earlier version
-        of the library \(clear()\) does not produce the expected result. </p>
-      <p>You can use <a href="https://p5js.org/reference/#/p5/noLoop">\(noLoop()\)</a> to freeze the image while you are
-        doing adjustments.</p>
-      <p>If you run this program you will see the shape with faded colors:</p>
-      <div class="img_frame final_faded"></div>
-      <p>Let's improve this by slightly modifying the HSBA values for each paraboloid:</p>
-      <pre>
-        <code class="language-javascript">      
-          function draw() {
-            // noLoop();
-            background("white");
-          
-            angle += rotationSpeed;
-            rotateX(angle);
-            rotateZ(angle * 0.1);
-          
-            let hue = 250,
-              saturation = 50,
-              brightness = 80,
-              alpha = 0.15;
-          
-            noStroke();
-            for (let paraboloidCoordinates of nestedParaboloidCoordinates) {
-              for (let i = 0; i &lt; paraboloidCoordinates.length - 1; i++) {
-                fill(hue, saturation, brightness, alpha);
-                drawTriangleStripFromTwoCurves(paraboloidCoordinates[i], paraboloidCoordinates[i + 1]);
-              }
-              hue -= 5;
-              brightness -= (20) / 5;
-              saturation += 10;
-              alpha += 0.075;
-            }
-          };
-        </code>
-      </pre>
+          href="https://p5js.org/reference/#/p5/background">\(background("white")\)</a> because in this earlier
+        version of the library \(clear()\) does not produce the expected result. </p>
+      <p>Let's run this program:</p>
       <div class="img_frame final_animated"></div>
       <small><a href="#">Source code</a></small>
       <p>Voilà!</p>

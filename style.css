@@ -157,8 +157,48 @@ label {
 	background-image: url("img/animated_paraboloids.gif");
 }
 
+
 .final_faded {
 	background-image: url("img/final_faded.png");
+}
+
+.color_gradient {
+	background-image: url("img/color_gradient.png");
+	height: 75px;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+table,
+tr,
+td {
+	border: 1px solid black;
+}
+
+td {
+	padding-left: 10px;
+	padding-right: 10px;
+}
+
+.color_transition_1 {
+	background-image: url("img/color_transition_1.png");
+}
+
+.color_transition_2 {
+	background-image: url("img/color_transition_2.png");
+}
+
+.color_transition_3 {
+	background-image: url("img/color_transition_3.png");
+}
+
+.color_transition_1,
+.color_transition_2,
+.color_transition_3 {
+	height: 200px;
+	width: 200px;
 }
 
 .final_animated {
