@@ -1,10 +1,14 @@
 let nestedParaboloidCoordinates = [],
-  colorGradient = [],
+  gradient = [],
   rotationSpeed = 0.005,
   angle = 0;
 
+
 function setup() {
-  createCanvas(windowWidth, windowHeight, WEBGL);
+  let canvas = createCanvas(windowWidth, windowHeight, WEBGL);
+  canvas.drawingContext.disable(canvas.drawingContext.DEPTH_TEST);
+  // https://github.com/processing/p5.js/issues/3736
+  blendMode(MULTIPLY);
 
   let boundingRadius = 250,
     numberOfParabolas = 6,
@@ -20,41 +24,29 @@ function setup() {
 
   nestedParaboloidCoordinates = getNestedParaboloidCoordinates(nestedParabolasCoordinates, numberOfRotations);
 
-  setAttributes('alpha', false);
-  colorMode(RGB, 255, 255, 255, 1);
+  let firstColor = color(100, 150, 230, 0),
+    lastColor = color(235, 235, 250, 0),
+    numberOfColors = numberOfParabolas,
+    transitionSpeed = 2.5;
 
-  let firstColor = color(0);
-  firstColor.setRed(0);
-  firstColor.setGreen(25);
-  firstColor.setBlue(125);
-  firstColor.setAlpha(0.75);
-
-  let lastColor = color(0);
-  lastColor.setRed(125);
-  lastColor.setGreen(100);
-  lastColor.setBlue(255);
-  lastColor.setAlpha(0.25);
-
-
-  let numberOfColors = numberOfParabolas,
-    transitionSpeed = 0.5;
-
-  colorGradient = getInterpolatedColors(firstColor, lastColor, numberOfColors, transitionSpeed);
+  gradient = getInterpolatedColors(firstColor, lastColor, numberOfColors, transitionSpeed);
 };
 
 function draw() {
-  background("white");
-  noStroke();
-
   angle += rotationSpeed;
   rotateX(angle);
   rotateZ(angle * 0.1);
 
+  background("white");
+  noStroke();
+
   for (let i = 0; i < nestedParaboloidCoordinates.length; i++) {
-    fill(colorGradient[i]);
-    let sectionsOfParaboloid = nestedParaboloidCoordinates[i];
-    for (let j = 0; j < sectionsOfParaboloid.length - 1; j++) {
-      drawTriangleStripFromTwoCurves(sectionsOfParaboloid[j], sectionsOfParaboloid[j + 1]);
+
+    let paraboloidSections = nestedParaboloidCoordinates[i];
+
+    for (let j = 0; j < paraboloidSections.length - 1; j++) {
+      fill(gradient[i]);
+      drawTriangleStripFromTwoCurves(paraboloidSections[j], paraboloidSections[j + 1]);
     }
   }
 };
@@ -148,7 +140,7 @@ let getInterpolatedColors = (firstColor, lastColor, numberOfColors, transitionSp
   let gradient = [];
   for (let i = 0; i < numberOfColors; i++) {
 
-    let interpolationFactor = ((pow(i, 1 / transitionSpeed) * 100 / (pow(numberOfColors - 1, 1 / transitionSpeed))) / 100);
+    let interpolationFactor = ((Math.pow(i, 1 / transitionSpeed) * 100 / (Math.pow(numberOfColors - 1, 1 / transitionSpeed))) / 100);
     interpolationFactor.toFixed(2);
 
     let intermediateColor = lerpColor(firstColor, lastColor, interpolationFactor);
