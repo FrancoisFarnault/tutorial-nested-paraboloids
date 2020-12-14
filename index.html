@@ -6,7 +6,6 @@
   <title>How to make nested paraboloids</title>
   <meta name="description" content="Nested hyperboloids - tutorial" />
   <meta name="viewport" content="width=device-width, user-scalable=no">
-  <link rel='stylesheet' href='style.css' />
 
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.22.0/themes/prism-okaidia.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.22.0/prism.min.js"></script>
@@ -16,6 +15,8 @@
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.12.0/dist/contrib/auto-render.min.js"
     onload="renderMathInElement(document.body);"></script>
+
+  <link rel='stylesheet' href='style.css' />
 </head>
 
 <body>
@@ -298,7 +299,7 @@
     </section>
 
     <section>
-      <h2>Graphing a paraboloid</h2>
+      <h2>Drawing a paraboloid</h2>
       <p>In this part we will:</p>
       <ol>
         <li>write a function that rotates a point in 3D,</li>
@@ -374,7 +375,7 @@
       <div class="img_frame cylindrical_coordinates"></div>
       <small><a href="#">Source code</a></small>
       <p>Now that we can rotate a point in 3D, how can we replicate this rotation for all the points of a parabola?</p>
-      <h3>Drawing the sections of a hyperboloid</h3>
+      <h3>Drawing the sections of a paraboloid</h3>
       <p>We are going to reuse the code we wrote to calculate the coordinates of the points that make
         a parabola.</p>
       <p>Then we will write a new function that rotates these points around the
@@ -788,11 +789,7 @@
             }
           };
           
-          let getValuesOfXAtParabolasEndpoints = (numberOfParabolas, boundingRadius, centerPadding, sidePadding) => { ... };
-          
-          let getParabolasEndPoints = (valuesOfX, boundingRadius) => { ... };
-          
-          let getVertices = (numberOfVertices, vertexInterspace) => { ... };
+          /* ... */
         </code>
       </pre>
       <div class="img_frame vertices"></div>
@@ -900,19 +897,7 @@
             // }
           };
           
-          let getValuesOfXAtParabolasEndpoints = (numberOfParabolas, boundingRadius, centerPadding, sidePadding) => { ... };
-          
-          let getParabolasEndPoints = (valuesOfX, boundingRadius) => { ... };
-          
-          let getParabolasVertices = (numberOfParabolas, vertexInterspace) => { ... };
-          
-          let getNestedParabolasCoordinates = (numberOfParabolas, endPoints, pointsPerParabola, vertices) => { ... };
-          
-          let getParabolaCoordinates = (focalLength, parabolaWidth, pointsPerParabola, distanceFromOrigin) => { ... };
-          
-          let getFocalLengthFromPointAndDistanceFromOrigin = (point, distanceFromOrigin) => { ... };
-          
-          let drawLineFromCoordinates = (coordinates) => { ... };
+          /* ... */
         </code>
       </pre>
       <div class="img_frame circumscribed_parabolas_1"></div>
@@ -1026,27 +1011,9 @@
                 drawTriangleStripFromTwoCurves(paraboloidCoordinates[i], paraboloidCoordinates[i + 1]);
               }
             }
-          };
+          }; 
           
-          let getValuesOfXAtParabolasEndpoints = (numberOfParabolas, boundingRadius, centerPadding, sidePadding) => { ... };
-          
-          let getParabolasEndPoints = (valuesOfX, boundingRadius) => { ... };
-          
-          let getParabolasVertices = (numberOfParabolas, vertexInterspace) => { ... };
-          
-          let getNestedParabolasCoordinates = (numberOfParabolas, endPoints, pointsPerParabola, vertices) => { ... };
-          
-          let getParabolaCoordinates = (focalLength, parabolaWidth, pointsPerParabola, distanceFromOrigin) => { ... };
-          
-          let getFocalLengthFromPointAndDistanceFromOrigin = (point, distanceFromOrigin) => { ... };
-          
-          let getNestedParaboloidCoordinates = (nestedParabolasCoordinates, numberOfRotations) => { ... };
-
-          let getSectionsOfParaboloid = (parabolaCoordinates, numberOfRotations) => { ... };
-          
-          let getCylindricalCoordinates = (point, numberOfRotations) => { ... };
-          
-          let drawTriangleStripFromTwoCurves = (coordinates1, coordinates2) => { ... };
+          /* ... */
         </code>
       </pre>
       <a href="https://www.youtube.com/watch?v=6TPVoB4uQCU"></a>
@@ -1082,10 +1049,10 @@
         </code>
       </pre>
       <p>You will find that with the current version of p5.js there is a bug with the rendering of translucent surfaces.
-        Luckily there is a quick fix that I found here: <a
-          href="https://github.com/processing/p5.js/issues/3736">https://github.com/processing/p5.js/issues/3736</a>.
       </p>
-      <p>Adding this line of code in \(setup()\) will give the surfaces the expected look:</p>
+      <p>Luckily there is a quick fix that I found here: <a
+          href="https://github.com/processing/p5.js/issues/3736">https://github.com/processing/p5.js/issues/3736</a>.
+        Adding this line of code in \(setup()\) will give the surfaces the expected look:</p>
       <pre>
         <code class="language-javascript"> 
           function setup() {
@@ -1246,7 +1213,7 @@
       <p><a href="https://codepen.io/francoisfarnault/pen/MWjaVoa">https://codepen.io/francoisfarnault/pen/MWjaVoa</a>
       </p> -->
       <p>Now let's implement these changes in \(draw()\):</p>
-      <h3>Implementing the gradient</h3>
+      <h3>Drawing the shape with a gradient</h3>
       <p>Here is what our program looks like in the end:</p>
       <pre>
         <code class="language-javascript">      
