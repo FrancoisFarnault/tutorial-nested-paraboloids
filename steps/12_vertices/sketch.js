@@ -54,7 +54,3 @@ let getParabolasVertices = (numberOfParabolas, vertexInterspace) => {
   }
   return vertices;
 };
-
-doubleClicked = () => {
-  save("myCanvas.png");
-};

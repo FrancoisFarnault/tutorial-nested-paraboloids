@@ -45,7 +45,3 @@ let getParabolasEndPoints = (valuesOfX, boundingRadius) => {
   }
   return parabolasEndPoints;
 };
-
-doubleClicked = () => {
-  save("myCanvas.png");
-};

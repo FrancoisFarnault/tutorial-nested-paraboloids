@@ -35,7 +35,3 @@ let drawLineFromCoordinates = (coordinates) => {
   }
   endShape();
 };
-
-doubleClicked = () => {
-  save("myCanvas.png");
-};

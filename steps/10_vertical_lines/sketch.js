@@ -30,7 +30,3 @@ let getValuesOfXAtParabolasEndpoints = (numberOfParabolas, boundingRadius, cente
   }
   return valuesOfX;
 };
-
-doubleClicked = () => {
-  save("myCanvas.png");
-};

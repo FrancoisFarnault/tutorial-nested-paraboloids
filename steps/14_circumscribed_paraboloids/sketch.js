@@ -119,7 +119,3 @@ let drawTriangleStripFromTwoCurves = (coordinates1, coordinates2) => {
   }
   endShape();
 };
-
-doubleClicked = () => {
-  save("myCanvas.png");
-};
