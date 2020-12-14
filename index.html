@@ -174,7 +174,9 @@
       </pre>
       <p>If you run this program you will see this parabola: </p>
       <div class="img_frame parabola_down"></div>
-      <small><a href="#">Source code</a></small>
+      <small><a
+          href="https://github.com/FrancoisFarnault/tutorial-nested-paraboloids/blob/master/steps/2_parabola_down/sketch.js">Source
+          code</a></small>
       <p>This is a good start. However this curve is made of with a huge amount of points very close to one another.
         Later on this will slow the process of rendering surfaces.</p>
       <p>How could we draw this curve with a lower number of points while retaining a sufficient level of definition?
@@ -232,7 +234,9 @@
         </code>
       </pre>
       <div class="img_frame segmented_parabola"></div>
-      <small><a href="#">Source code</a></small>
+      <small><a
+          href="https://github.com/FrancoisFarnault/tutorial-nested-paraboloids/blob/master/steps/3_parabola_segmented/sketch.js">Source
+          code</a></small>
       <p>Now we can set the curve's level of definition. But there is one last thing to improve before moving on
         to 3D:</p>
       <p>With our current code all parabolas must pass through the center of the screen: the point of
@@ -294,7 +298,9 @@
         </code>
       </pre>
       <div class="img_frame distance_from_origin"></div>
-      <small><a href="#">Source code</a></small>
+      <small><a
+          href="https://github.com/FrancoisFarnault/tutorial-nested-paraboloids/blob/master/steps/4_distance_from_origin/sketch.js">Source
+          code</a></small>
       <p>This is enough material to move from 2D to 3D. Let's make a paraboloid from this curve.</p>
     </section>
 
@@ -373,7 +379,9 @@
           </code>
         </pre>
       <div class="img_frame cylindrical_coordinates"></div>
-      <small><a href="#">Source code</a></small>
+      <small><a
+          href="https://github.com/FrancoisFarnault/tutorial-nested-paraboloids/tree/master/steps/5_cylindrical_coordinates">Source
+          code</a></small>
       <p>Now that we can rotate a point in 3D, how can we replicate this rotation for all the points of a parabola?</p>
       <h3>Drawing the sections of a paraboloid</h3>
       <p>We are going to reuse the code we wrote to calculate the coordinates of the points that make
@@ -432,7 +440,9 @@
         </code>
       </pre>
       <div class="img_frame paraboloid_sections"></div>
-      <small><a href="#">Source code</a></small>
+      <small><a
+          href="https://github.com/FrancoisFarnault/tutorial-nested-paraboloids/blob/master/steps/6_paraboloid%20sections/sketch.js">Source
+          code</a></small>
       <p>A paraboloid is taking shape! Yet it is still made of with lines while what we want is surfaces.</p>
       <p>How can we use
         these sections to generate surfaces?</p>
@@ -494,7 +504,9 @@
         </code>
       </pre>
       <div class="img_frame paraboloid_surfaces"></div>
-      <small><a href="#">Source code</a></small>
+      <small><a
+          href="https://github.com/FrancoisFarnault/tutorial-nested-paraboloids/blob/master/steps/7_paraboloid_surfaces/sketch.js">Source
+          code</a></small>
       <p>This is better. Now that we know how to make a single paraboloid, let's make more!</p>
     </section>
 
@@ -574,7 +586,9 @@
         </code>
       </pre>
       <div class="img_frame nested_paraboloids"></div>
-      <small><a href="#">Source code</a></small>
+      <small><a
+          href="https://github.com/FrancoisFarnault/tutorial-nested-paraboloids/blob/master/steps/8_nested%20paraboloids/sketch.js">Source
+          code</a></small>
       <p>Nice! The pinecone-like structure is there and this shape bears some similarities with the expected result.</p>
       <p>That being said the way we set \(focalLength\), \(parabolaWidth\), and the \(distanceFromOrigin\) is imprecise
         and there isn't yet a well identified design pattern for the proportions.
@@ -624,7 +638,9 @@
         </code>
       </pre>
       <div class="img_frame bounding_circle"></div>
-      <small><a href="#">Source code</a></small>
+      <small><a
+          href="https://github.com/FrancoisFarnault/tutorial-nested-paraboloids/blob/master/steps/9_bounding_circle/sketch.js">Source
+          code</a></small>
       <h3>Visualizing the widths of the parabolas</h3>
       <p>In this part we are going to use the function <a href="https://p5js.org/reference/#/p5/line">\(line()\)</a> to
         visualize the different widths of the parabolas.</p>
@@ -673,7 +689,9 @@
         </code>
       </pre>
       <div class="img_frame vertical_lines"></div>
-      <small><a href="#">Source code</a></small>
+      <small><a
+          href="https://github.com/FrancoisFarnault/tutorial-nested-paraboloids/blob/master/steps/10_vertical_lines/sketch.js">Source
+          code</a></small>
       <p>The next step is to find the coordinates of the intersection points between each line and the bounding
         circle.
       </p>
@@ -739,7 +757,9 @@
         </code>
       </pre>
       <div class="img_frame intersection_points"></div>
-      <small><a href="#">Source code</a></small>
+      <small><a
+          href="https://github.com/FrancoisFarnault/tutorial-nested-paraboloids/blob/master/steps/11_intersection_points/sketch.js">Source
+          code</a></small>
       <p>We are going to use these endpoints to graph the parabolas. But first let's draw the
         vertices.</p>
       <h3>Setting the vertices</h3>
@@ -793,7 +813,9 @@
         </code>
       </pre>
       <div class="img_frame vertices"></div>
-      <small><a href="#">Source code</a></small>
+      <small><a
+          href="https://github.com/FrancoisFarnault/tutorial-nested-paraboloids/blob/master/steps/12_vertices/sketch.js">Source
+          code</a></small>
       <p>Now let's join the dots!</p>
       <h3>Drawing the parabolas</h3>
       <p>So far the function that we coded to graph a parabola took 4 arguments:
@@ -902,7 +924,9 @@
       </pre>
       <div class="img_frame circumscribed_parabolas_1"></div>
       <div class="img_frame circumscribed_parabolas_2"></div>
-      <small><a href="#">Source code</a></small>
+      <small><a
+          href="https://github.com/FrancoisFarnault/tutorial-nested-paraboloids/blob/master/steps/13_circumscribed_parabolas/sketch.js">Source
+          code</a></small>
       <p>Great! We are only one step away from drawing nested paraboloids.</p>
       <h3>Drawing the hyperboloids</h3>
       <p>What we have done in the previous part changes the logic of the function that returns the coordinates of
@@ -976,7 +1000,9 @@
         </code>
       </pre>
       <div class="img_frame circumscribed_paraboloids"></div>
-      <small><a href="#">Source code</a></small>
+      <small><a
+          href="https://github.com/FrancoisFarnault/tutorial-nested-paraboloids/blob/master/steps/14_circumscribed_paraboloids/sketch.js">Source
+          code</a></small>
       <p>With twelve functions this program is becoming relatively big. In the following part we are
         going focus solely on \(draw()\).</p>
     </section>
@@ -1018,7 +1044,9 @@
       </pre>
       <a href="https://www.youtube.com/watch?v=6TPVoB4uQCU"></a>
       <div class="img_frame animated_paraboloids"></div>
-      <small><a href="#">Source code</a></small>
+      <small><a
+          href="https://github.com/FrancoisFarnault/tutorial-nested-paraboloids/blob/master/steps/15_animated_paraboloids/sketch.js">Source
+          code</a></small>
       <p>Drawing in motion enables a better understanding of the volume in
         space.</p>
       <p>What if we added another dimension to this shape with colors and transparencies?</p>
@@ -1271,7 +1299,9 @@
         would not produce the expected result. </p>
       <p>Let's run this program:</p>
       <div class="img_frame final_animated"></div>
-      <small><a href="#">Source code</a></small>
+      <small><a
+          href="https://github.com/FrancoisFarnault/tutorial-nested-paraboloids/blob/master/steps/16_translucent_paraboloids/sketch.js">Source
+          code</a></small>
       <p>Voilà!</p>
     </section>
 
